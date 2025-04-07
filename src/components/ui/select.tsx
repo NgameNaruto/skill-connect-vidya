@@ -8,9 +8,8 @@ type SelectOption = {
   disabled?: boolean;
 };
 
-interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'onChange'> {
+interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   options?: SelectOption[];
-  onChange?: (value: string) => void;
   onValueChange?: (value: string) => void;
   placeholder?: string;
 }
@@ -30,7 +29,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       <select
         ref={ref}
         className={cn(
-          'flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+          'flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
           className
         )}
         value={value}
@@ -58,14 +57,15 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
 );
 Select.displayName = 'Select';
 
+// For components that need SelectTrigger, SelectContent, etc. to work with existing code
 const SelectTrigger = React.forwardRef<
-  HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & { children: React.ReactNode; placeholder?: string }
 >(({ className, children, ...props }, ref) => (
-  <button
+  <div
     ref={ref}
     className={cn(
-      'flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+      'flex h-10 w-full items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm',
       className
     )}
     {...props}
@@ -85,7 +85,7 @@ const SelectTrigger = React.forwardRef<
     >
       <path d="m6 9 6 6 6-6" />
     </svg>
-  </button>
+  </div>
 ));
 SelectTrigger.displayName = 'SelectTrigger';
 
@@ -96,7 +96,7 @@ const SelectContent = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'relative z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md',
+      'relative z-50 min-w-[8rem] overflow-hidden rounded-md border bg-white text-gray-800 shadow-md',
       className
     )}
     {...props}
@@ -113,7 +113,7 @@ const SelectItem = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
+      'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none hover:bg-gray-100',
       className
     )}
     {...props}
@@ -123,9 +123,9 @@ const SelectItem = React.forwardRef<
 ));
 SelectItem.displayName = 'SelectItem';
 
-// Adding SelectValue for compatibility
-const SelectValue = ({ children }: { children: React.ReactNode }) => {
-  return <>{children}</>;
+// Adding SelectValue that accepts a placeholder
+const SelectValue = ({ children, placeholder }: { children: React.ReactNode; placeholder?: string }) => {
+  return <>{children || placeholder}</>;
 };
 SelectValue.displayName = 'SelectValue';
 

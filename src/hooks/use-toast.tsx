@@ -1,6 +1,6 @@
 
 import { useState, useEffect, createContext, useContext } from 'react';
-import { ToastProps } from '@/components/ui/toast';
+import type { ToastProps } from '@/components/ui/toast';
 
 type ToastActionElement = React.ReactElement;
 
@@ -13,14 +13,14 @@ interface Toast extends ToastProps {
 
 interface ToastContextProps {
   toasts: Toast[];
-  addToast: (toast: Omit<Toast, 'id'>) => void;
+  addToast: (toast: Omit<Toast, 'id'>) => string;
   removeToast: (id: string) => void;
   updateToast: (id: string, toast: Partial<Toast>) => void;
 }
 
 const ToastContext = createContext<ToastContextProps>({
   toasts: [],
-  addToast: () => {},
+  addToast: () => "",
   removeToast: () => {},
   updateToast: () => {},
 });
@@ -30,7 +30,16 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
 
   const addToast = (toast: Omit<Toast, 'id'>) => {
     const id = Math.random().toString(36).substring(2, 9);
-    setToasts((prev) => [...prev, { id, ...toast }]);
+    const newToast = { 
+      id, 
+      ...toast, 
+      onOpenChange: (open: boolean) => {
+        if (!open) removeToast(id);
+        toast.onOpenChange?.(open);
+      }
+    };
+    
+    setToasts((prev) => [...prev, newToast]);
 
     if (toast.duration !== Infinity) {
       setTimeout(() => {
@@ -69,7 +78,19 @@ export const useToast = () => {
   const context = useContext(ToastContext);
 
   if (!context) {
-    throw new Error('useToast must be used within a ToastProvider');
+    console.warn('useToast must be used within a ToastProvider');
+    return {
+      toast: (props: Omit<Toast, 'id'>) => {
+        console.log('Toast:', props.title);
+        return {
+          id: 'fallback',
+          dismiss: () => {},
+          update: () => {},
+        };
+      },
+      dismiss: () => {},
+      toasts: [],
+    };
   }
 
   return {
@@ -95,11 +116,13 @@ export const useToast = () => {
   };
 };
 
+// For direct import usage
 export const toast = (props: Omit<Toast, 'id'>) => {
+  // This is a useful placeholder for static imports
   console.log('Toast:', props.title);
-  // This is a fallback for when the toast is used outside a component
+  
   return {
-    id: 'fallback',
+    id: 'direct-fallback',
     dismiss: () => {},
     update: () => {},
   };

@@ -5,16 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search, Star } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface Teacher {
   id: string;
@@ -95,13 +90,13 @@ const FindTeacher = () => {
         transition={{ duration: 0.3 }}
       >
         <h2 className="text-3xl font-bold mb-2">Find Teachers</h2>
-        <p className="text-muted-foreground">Discover skilled mentors who can help you learn.</p>
+        <p className="text-gray-500">Discover skilled mentors who can help you learn.</p>
       </motion.div>
       
       {/* Search and filters */}
       <div className="space-y-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
           <Input
             placeholder="Search by name or skill..."
             value={searchTerm}
@@ -113,18 +108,17 @@ const FindTeacher = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="text-sm font-medium mb-1 block">Skill</label>
-            <Select value={selectedSkill} onValueChange={setSelectedSkill}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select skill" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Skills</SelectItem>
-                <SelectItem value="Yoga">Yoga</SelectItem>
-                <SelectItem value="Guitar">Guitar</SelectItem>
-                <SelectItem value="Painting">Painting</SelectItem>
-                <SelectItem value="Programming">Programming</SelectItem>
-              </SelectContent>
-            </Select>
+            <Select 
+              value={selectedSkill} 
+              onChange={(e) => setSelectedSkill(e.target.value)}
+              options={[
+                { value: "all", label: "All Skills" },
+                { value: "Yoga", label: "Yoga" },
+                { value: "Guitar", label: "Guitar" },
+                { value: "Painting", label: "Painting" },
+                { value: "Programming", label: "Programming" }
+              ]}
+            />
           </div>
           
           <div>
@@ -137,7 +131,7 @@ const FindTeacher = () => {
                 value={priceRange}
                 onValueChange={setPriceRange}
               />
-              <div className="flex justify-between mt-2 text-xs text-muted-foreground">
+              <div className="flex justify-between mt-2 text-xs text-gray-500">
                 <span>${priceRange[0]}</span>
                 <span>${priceRange[1]}</span>
               </div>
@@ -148,19 +142,15 @@ const FindTeacher = () => {
             <label className="text-sm font-medium mb-1 block">Rating</label>
             <Select 
               value={ratingFilter?.toString() || "any"} 
-              onValueChange={(val) => setRatingFilter(val === "any" ? null : Number(val))}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Minimum rating" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="any">Any Rating</SelectItem>
-                <SelectItem value="4.5">4.5+</SelectItem>
-                <SelectItem value="4">4+</SelectItem>
-                <SelectItem value="3.5">3.5+</SelectItem>
-                <SelectItem value="3">3+</SelectItem>
-              </SelectContent>
-            </Select>
+              onChange={(e) => setRatingFilter(e.target.value === "any" ? null : Number(e.target.value))}
+              options={[
+                { value: "any", label: "Any Rating" },
+                { value: "4.5", label: "4.5+" },
+                { value: "4", label: "4+" },
+                { value: "3.5", label: "3.5+" },
+                { value: "3", label: "3+" }
+              ]}
+            />
           </div>
         </div>
       </div>
@@ -169,7 +159,7 @@ const FindTeacher = () => {
       {filteredTeachers.length === 0 ? (
         <div className="text-center py-10">
           <h3 className="text-lg font-medium">No teachers found</h3>
-          <p className="text-muted-foreground">Try adjusting your search criteria.</p>
+          <p className="text-gray-500">Try adjusting your search criteria.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -180,7 +170,7 @@ const FindTeacher = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
             >
-              <Card className="card-hover">
+              <Card className="hover:shadow-md transition-shadow">
                 <CardHeader className="flex flex-row items-center gap-4">
                   <Avatar className="h-14 w-14">
                     <AvatarImage src={teacher.avatar} />
@@ -189,7 +179,7 @@ const FindTeacher = () => {
                   <div>
                     <CardTitle className="text-lg">{teacher.name}</CardTitle>
                     <div className="flex items-center gap-1">
-                      <Star className="h-3 w-3 fill-primary text-primary" />
+                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                       <span className="text-sm">{teacher.rating}</span>
                     </div>
                     <CardDescription className="text-xs">{teacher.skill} Teacher</CardDescription>
@@ -200,7 +190,7 @@ const FindTeacher = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-lg font-semibold">${teacher.hourlyRate}</span>
-                      <span className="text-sm text-muted-foreground">/hour</span>
+                      <span className="text-sm text-gray-500">/hour</span>
                     </div>
                     <Button size="sm" asChild>
                       <Link to={`/student/teacher/${teacher.id}`}>View Profile</Link>

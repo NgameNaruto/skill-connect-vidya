@@ -2,39 +2,42 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 
-const Switch = React.forwardRef<
-  HTMLInputElement,
-  React.InputHTMLAttributes<HTMLInputElement>
->(({ className, ...props }, ref) => {
-  const id = React.useId();
-  
-  return (
-    <div className="relative inline-flex items-center">
-      <input
-        type="checkbox"
-        id={id}
-        className="sr-only"
-        ref={ref}
-        {...props}
-      />
-      <label
-        htmlFor={id}
-        className={cn(
-          'relative inline-block h-6 w-11 cursor-pointer rounded-full bg-muted transition-colors',
-          props.checked && 'bg-primary',
-          className
-        )}
-      >
-        <span 
-          className={cn(
-            'absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform',
-            props.checked && 'translate-x-5'
-          )} 
-        />
+interface SwitchProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+  checked?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
+}
+
+const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
+  ({ className, checked, onCheckedChange, ...props }, ref) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      onCheckedChange?.(event.target.checked);
+    };
+
+    return (
+      <label className={cn('inline-flex items-center cursor-pointer', className)}>
+        <div className="relative">
+          <input
+            type="checkbox"
+            className="sr-only"
+            checked={checked}
+            onChange={handleChange}
+            ref={ref}
+            {...props}
+          />
+          <div className={cn(
+            "block w-11 h-6 rounded-full transition-colors",
+            checked ? "bg-blue-600" : "bg-gray-300"
+          )}></div>
+          <div className={cn(
+            "absolute left-1 top-1 bg-white rounded-full w-4 h-4 transition-transform",
+            checked ? "transform translate-x-5" : ""
+          )}></div>
+        </div>
       </label>
-    </div>
-  );
-});
+    );
+  }
+);
+
 Switch.displayName = 'Switch';
 
 export { Switch };

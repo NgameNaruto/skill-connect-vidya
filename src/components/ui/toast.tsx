@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { X } from 'lucide-react';
 
 export interface ToastProps {
   id?: string;
@@ -15,20 +16,14 @@ export interface ToastProps {
   children?: React.ReactNode;
 }
 
-export interface ToastActionElement {
-  altText: string;
-  onClick: () => void;
-  children: React.ReactNode;
-}
-
 const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
-  ({ className, variant = "default", title, description, action, ...props }, ref) => {
+  ({ className, variant = "default", title, description, action, id, onOpenChange, ...props }, ref) => {
     return (
       <div
         ref={ref}
         className={cn(
           "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-4 shadow-lg transition-all",
-          variant === "default" && "bg-white text-foreground border-gray-200",
+          variant === "default" && "bg-white text-gray-900 border-gray-200",
           variant === "destructive" && "bg-red-500 text-white border-red-600",
           variant === "success" && "bg-green-500 text-white border-green-600",
           className
@@ -39,7 +34,15 @@ const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
           {title && <div className="text-sm font-semibold">{title}</div>}
           {description && <div className="text-sm opacity-90">{description}</div>}
         </div>
-        {action && <div>{action}</div>}
+        <div className="flex items-center gap-2">
+          {action && <div>{action}</div>}
+          <button 
+            onClick={() => onOpenChange?.(false)} 
+            className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
       </div>
     );
   }
@@ -62,60 +65,4 @@ const ToastViewport = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
 
 ToastViewport.displayName = "ToastViewport";
 
-const ToastProvider = ({ children }: { children: React.ReactNode }) => {
-  return <>{children}</>;
-};
-
-const Toaster = () => {
-  const { toasts } = useToast();
-
-  return (
-    <ToastProvider>
-      <ToastViewport>
-        {toasts.map(({ id, title, description, action, ...props }) => (
-          <Toast
-            key={id}
-            title={title}
-            description={description}
-            action={action}
-            {...props}
-          />
-        ))}
-      </ToastViewport>
-    </ToastProvider>
-  );
-};
-
-// Temporary simplified useToast hook that integrates with our existing toast system
-const useToast = () => {
-  const [toasts, setToasts] = useState<ToastProps[]>([]);
-
-  return {
-    toasts,
-    toast: (props: ToastProps) => {
-      const id = Math.random().toString(36).substring(2, 9);
-      setToasts((prev) => [...prev, { id, ...props }]);
-      
-      setTimeout(() => {
-        setToasts((prev) => prev.filter((toast) => toast.id !== id));
-      }, props.duration || 3000);
-      
-      return {
-        id,
-        dismiss: () => setToasts((prev) => prev.filter((toast) => toast.id !== id)),
-        update: (newProps: ToastProps) => setToasts((prev) => 
-          prev.map((toast) => (toast.id === id ? { ...toast, ...newProps } : toast))
-        ),
-      };
-    },
-    dismiss: (toastId?: string) => {
-      if (toastId) {
-        setToasts((prev) => prev.filter((toast) => toast.id !== toastId));
-      } else {
-        setToasts([]);
-      }
-    },
-  };
-};
-
-export { useToast, Toaster, Toast, ToastProvider, ToastViewport };
+export { Toast, ToastViewport };

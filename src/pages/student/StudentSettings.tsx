@@ -7,9 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const StudentSettings = () => {
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "John Doe",
     email: "john.doe@example.com",
@@ -91,7 +92,7 @@ const StudentSettings = () => {
     >
       <div>
         <h2 className="text-3xl font-bold mb-2">Account Settings</h2>
-        <p className="text-muted-foreground">Manage your account preferences and settings.</p>
+        <p className="text-gray-500">Manage your account preferences and settings.</p>
       </div>
       
       <Tabs defaultValue="profile">
@@ -137,7 +138,7 @@ const StudentSettings = () => {
                   <textarea
                     id="bio"
                     name="bio"
-                    className="min-h-[100px] rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    className="min-h-[100px] rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Tell us about yourself..."
                     value={formData.bio}
                     onChange={handleProfileChange}
@@ -215,7 +216,7 @@ const StudentSettings = () => {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>Email Notifications</Label>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-gray-500">
                     Receive updates via email
                   </p>
                 </div>
@@ -228,7 +229,7 @@ const StudentSettings = () => {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>Session Reminders</Label>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-gray-500">
                     Get notified about upcoming sessions
                   </p>
                 </div>
@@ -241,7 +242,7 @@ const StudentSettings = () => {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>Message Notifications</Label>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-gray-500">
                     Get notified when you receive a message
                   </p>
                 </div>
@@ -254,7 +255,7 @@ const StudentSettings = () => {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>Marketing Emails</Label>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-gray-500">
                     Receive updates on new features and promotions
                   </p>
                 </div>

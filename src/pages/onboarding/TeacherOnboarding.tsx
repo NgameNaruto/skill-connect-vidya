@@ -110,12 +110,16 @@ const TeacherOnboarding = ({ step, onNext, onBack, onComplete }: TeacherOnboardi
     });
   };
 
+  const handleDateSelect = (selectedDate: Date | undefined) => {
+    setDate(selectedDate);
+  };
+
   if (step === "info") {
     return (
       <div className="space-y-6">
         <h2 className="text-xl font-semibold">Basic Information</h2>
         
-        <Form {...basicForm}>
+        <Form form={basicForm}>
           <form onSubmit={basicForm.handleSubmit(onNext)} className="space-y-4">
             <FormField
               control={basicForm.control}
@@ -207,7 +211,7 @@ const TeacherOnboarding = ({ step, onNext, onBack, onComplete }: TeacherOnboardi
                   />
                   <label 
                     htmlFor={skill.id} 
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    className="text-sm font-medium leading-none cursor-pointer"
                   >
                     {skill.label}
                   </label>
@@ -216,7 +220,7 @@ const TeacherOnboarding = ({ step, onNext, onBack, onComplete }: TeacherOnboardi
             </div>
           </div>
           
-          <Form {...expertiseForm}>
+          <Form form={expertiseForm}>
             <form onSubmit={expertiseForm.handleSubmit(onNext)} className="space-y-4">
               <FormField
                 control={expertiseForm.control}
@@ -267,7 +271,7 @@ const TeacherOnboarding = ({ step, onNext, onBack, onComplete }: TeacherOnboardi
     return (
       <div className="space-y-6">
         <h2 className="text-xl font-semibold">Set Your Availability</h2>
-        <p className="text-muted-foreground">Select dates and time slots when you're available to teach.</p>
+        <p className="text-gray-500">Select dates and time slots when you're available to teach.</p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -277,7 +281,7 @@ const TeacherOnboarding = ({ step, onNext, onBack, onComplete }: TeacherOnboardi
                 <Calendar
                   mode="single"
                   selected={date}
-                  onSelect={setDate}
+                  onSelect={handleDateSelect}
                   className="rounded-md border"
                 />
               </CardContent>
@@ -292,15 +296,15 @@ const TeacherOnboarding = ({ step, onNext, onBack, onComplete }: TeacherOnboardi
                   key={slot}
                   className={`p-2 border rounded-md cursor-pointer transition-colors ${
                     selectedSlots.includes(slot) 
-                      ? "bg-primary/10 border-primary" 
-                      : "hover:bg-accent"
+                      ? "bg-blue-50 border-blue-500" 
+                      : "hover:bg-gray-50"
                   }`}
                   onClick={() => handleSlotToggle(slot)}
                 >
                   <div className="flex items-center justify-between">
                     <span>{slot}</span>
                     {selectedSlots.includes(slot) && (
-                      <CheckIcon className="h-4 w-4 text-primary" />
+                      <CheckIcon className="h-4 w-4 text-blue-600" />
                     )}
                   </div>
                 </div>
@@ -339,15 +343,15 @@ const TeacherOnboarding = ({ step, onNext, onBack, onComplete }: TeacherOnboardi
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center"
+            className="h-24 w-24 rounded-full bg-green-100 flex items-center justify-center"
           >
-            <CheckIcon className="h-12 w-12 text-primary" />
+            <CheckIcon className="h-12 w-12 text-green-600" />
           </motion.div>
         </div>
         
         <div>
           <h2 className="text-xl font-semibold">You're All Set!</h2>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-gray-500 mt-2">
             Your teacher profile has been created. Start sharing your knowledge with eager students!
           </p>
         </div>

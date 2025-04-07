@@ -1,11 +1,30 @@
 
 import * as React from 'react';
-import { useFormContext, Controller, FieldValues, ControllerProps, FieldPath } from 'react-hook-form';
+import { 
+  useFormContext, 
+  Controller, 
+  FieldValues, 
+  ControllerProps, 
+  FieldPath,
+  useForm as useReactHookForm,
+  UseFormReturn
+} from 'react-hook-form';
 import { cn } from '@/lib/utils';
 
 // Form components to replace shadcn's form components
-const Form = ({ className, ...props }: React.FormHTMLAttributes<HTMLFormElement>) => (
-  <form className={cn('space-y-6', className)} {...props} />
+const Form = <
+  TFieldValues extends FieldValues = FieldValues,
+  TContext = any,
+>({ 
+  children, 
+  className, 
+  ...props 
+}: React.FormHTMLAttributes<HTMLFormElement> & {
+  form?: UseFormReturn<TFieldValues, TContext>;
+}) => (
+  <form className={cn('space-y-6', className)} {...props}>
+    {children}
+  </form>
 );
 Form.displayName = 'Form';
 
@@ -24,7 +43,7 @@ const FormLabel = React.forwardRef<
   <label
     ref={ref}
     className={cn(
-      'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
+      'text-sm font-medium text-gray-700',
       className
     )}
     {...props}
@@ -50,7 +69,7 @@ const FormDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn('text-sm text-muted-foreground', className)}
+    className={cn('text-sm text-gray-500', className)}
     {...props}
   />
 ));
@@ -62,7 +81,7 @@ const FormMessage = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn('text-sm font-medium text-destructive', className)}
+    className={cn('text-sm font-medium text-red-500', className)}
     {...props}
   >
     {children}
@@ -93,6 +112,30 @@ const FormField = <
   );
 };
 
+const useFormField = () => {
+  const fieldContext = React.useContext(FormFieldContext);
+  const formContext = useFormContext();
+
+  if (!fieldContext) {
+    throw new Error("useFormField must be used within <FormField>");
+  }
+
+  const { name } = fieldContext;
+  const {
+    formState: { errors },
+    getFieldState,
+  } = formContext;
+
+  return {
+    name,
+    formItemId: `form-item-${name}`,
+    formDescriptionId: `form-item-description-${name}`,
+    formMessageId: `form-item-message-${name}`,
+    ...getFieldState(name, formContext),
+    error: errors[name],
+  };
+};
+
 export {
   Form,
   FormItem,
@@ -101,4 +144,6 @@ export {
   FormDescription,
   FormMessage,
   FormField,
+  useFormField,
+  useReactHookForm,
 };

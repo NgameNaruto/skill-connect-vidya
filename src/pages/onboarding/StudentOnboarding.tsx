@@ -73,7 +73,7 @@ const StudentOnboarding = ({ step, onNext, onBack, onComplete }: StudentOnboardi
       <div className="space-y-6">
         <h2 className="text-xl font-semibold">Basic Information</h2>
         
-        <Form {...form}>
+        <Form form={form}>
           <form onSubmit={form.handleSubmit(onNext)} className="space-y-4">
             <FormField
               control={form.control}
@@ -137,7 +137,7 @@ const StudentOnboarding = ({ step, onNext, onBack, onComplete }: StudentOnboardi
     return (
       <div className="space-y-6">
         <h2 className="text-xl font-semibold">Skills I Want to Learn</h2>
-        <p className="text-muted-foreground">Select the skills you're interested in learning.</p>
+        <p className="text-gray-500">Select the skills you're interested in learning.</p>
         
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {skills.map((skill) => (
@@ -149,7 +149,7 @@ const StudentOnboarding = ({ step, onNext, onBack, onComplete }: StudentOnboardi
               />
               <label 
                 htmlFor={skill.id} 
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                className="text-sm font-medium leading-none cursor-pointer"
               >
                 {skill.label}
               </label>
@@ -176,15 +176,15 @@ const StudentOnboarding = ({ step, onNext, onBack, onComplete }: StudentOnboardi
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center"
+            className="h-24 w-24 rounded-full bg-green-100 flex items-center justify-center"
           >
-            <CheckIcon className="h-12 w-12 text-primary" />
+            <CheckIcon className="h-12 w-12 text-green-600" />
           </motion.div>
         </div>
         
         <div>
           <h2 className="text-xl font-semibold">You're All Set!</h2>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-gray-500 mt-2">
             Your student profile has been created. Let's start exploring skills and finding teachers.
           </p>
         </div>

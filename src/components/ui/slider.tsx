@@ -2,15 +2,16 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 
-interface SliderProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
+interface SliderProps {
   max?: number;
   min?: number;
   step?: number;
-  defaultValue?: number | number[];
-  value?: number | number[];
+  defaultValue?: number[];
+  value?: number[];
   onValueChange?: (value: number[]) => void;
   orientation?: 'horizontal' | 'vertical';
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  className?: string;
 }
 
 const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
@@ -19,7 +20,7 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
     max = 100, 
     min = 0, 
     step = 1, 
-    defaultValue, 
+    defaultValue = [0], 
     value, 
     onValueChange,
     onChange,
@@ -28,19 +29,19 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
   }, ref) => {
     const initialValue = React.useMemo(() => {
       if (value !== undefined) {
-        return Array.isArray(value) ? value[0] : value;
+        return value[0];
       }
       if (defaultValue !== undefined) {
-        return Array.isArray(defaultValue) ? defaultValue[0] : defaultValue;
+        return defaultValue[0];
       }
       return min;
-    }, []);
+    }, [defaultValue, min, value]);
     
     const [internalValue, setInternalValue] = React.useState<number>(initialValue);
 
     React.useEffect(() => {
       if (value !== undefined) {
-        setInternalValue(Array.isArray(value) ? value[0] : value);
+        setInternalValue(value[0]);
       }
     }, [value]);
 
@@ -76,12 +77,12 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
           value={internalValue}
           onChange={handleChange}
           className={cn(
-            'w-full h-2 bg-muted rounded-full appearance-none cursor-pointer',
-            'transparent',
-            '[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full'
+            'w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer',
+            'focus:outline-none focus:ring-2 focus:ring-blue-500',
+            '[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-600'
           )}
           style={{
-            background: `linear-gradient(to right, var(--primary) 0%, var(--primary) ${percentage}%, var(--muted) ${percentage}%, var(--muted) 100%)`
+            background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${percentage}%, #e5e7eb ${percentage}%, #e5e7eb 100%)`
           }}
           {...props}
         />

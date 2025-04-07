@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar as CalendarIcon, Clock, ArrowRight, CreditCard } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 
@@ -41,6 +41,7 @@ const mockTimeSlots: TimeSlot[] = [
 const BookSession = () => {
   const { teacherId } = useParams<{ teacherId: string }>();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [step, setStep] = useState<"date" | "payment">("date");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedSlot, setSelectedSlot] = useState<string | undefined>(undefined);
@@ -64,6 +65,10 @@ const BookSession = () => {
     });
     navigate("/student/overview");
   };
+
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+  };
   
   return (
     <motion.div
@@ -74,7 +79,7 @@ const BookSession = () => {
     >
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold">Book a Session</h2>
-        <div className="text-sm font-medium text-muted-foreground">
+        <div className="text-sm font-medium text-gray-500">
           with {teacher.name}
         </div>
       </div>
@@ -94,7 +99,7 @@ const BookSession = () => {
                   <Calendar
                     mode="single"
                     selected={selectedDate}
-                    onSelect={setSelectedDate}
+                    onSelect={handleDateSelect}
                     className="border rounded-md"
                     disabled={(date) => 
                       date < new Date() || 
@@ -107,14 +112,14 @@ const BookSession = () => {
                   <h3 className="text-lg font-medium mb-2">
                     Available time slots
                     {selectedDate && (
-                      <span className="block text-sm text-muted-foreground">
+                      <span className="block text-sm text-gray-500">
                         for {format(selectedDate, "PPP")}
                       </span>
                     )}
                   </h3>
                   
                   {!selectedDate ? (
-                    <p className="text-muted-foreground">Please select a date first</p>
+                    <p className="text-gray-500">Please select a date first</p>
                   ) : (
                     <div className="grid grid-cols-1 gap-2 mt-2">
                       {mockTimeSlots.map(slot => (
@@ -122,10 +127,10 @@ const BookSession = () => {
                           key={slot.id}
                           className={`border rounded-md p-3 cursor-pointer transition-colors ${
                             !slot.available
-                              ? "bg-muted cursor-not-allowed opacity-60"
+                              ? "bg-gray-100 cursor-not-allowed opacity-60"
                               : selectedSlot === slot.id
-                              ? "border-primary bg-primary/10"
-                              : "hover:bg-accent"
+                              ? "border-blue-500 bg-blue-50"
+                              : "hover:bg-gray-50"
                           }`}
                           onClick={() => {
                             if (slot.available) setSelectedSlot(slot.id);
@@ -133,7 +138,7 @@ const BookSession = () => {
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center">
-                              <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
+                              <Clock className="h-4 w-4 mr-2 text-gray-500" />
                               <span>{slot.time}</span>
                             </div>
                             {!slot.available && <Badge variant="outline">Booked</Badge>}
@@ -165,18 +170,18 @@ const BookSession = () => {
                 </Avatar>
                 <div>
                   <p className="font-medium">{teacher.name}</p>
-                  <p className="text-sm text-muted-foreground">{teacher.skill} Teacher</p>
+                  <p className="text-sm text-gray-500">{teacher.skill} Teacher</p>
                 </div>
               </div>
               
               <div className="space-y-1">
                 <h3 className="font-medium">Session Details</h3>
                 <div className="flex items-center">
-                  <CalendarIcon className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <CalendarIcon className="h-4 w-4 mr-2 text-gray-500" />
                   <span>{selectedDate ? format(selectedDate, "PPP") : "Not selected"}</span>
                 </div>
                 <div className="flex items-center">
-                  <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <Clock className="h-4 w-4 mr-2 text-gray-500" />
                   <span>
                     {selectedSlot 
                       ? mockTimeSlots.find(slot => slot.id === selectedSlot)?.time 
@@ -204,8 +209,8 @@ const BookSession = () => {
               </div>
               
               {/* Payment form would go here in a real app */}
-              <div className="border p-4 rounded-md bg-muted/50">
-                <p className="text-center text-muted-foreground">
+              <div className="border p-4 rounded-md bg-gray-50">
+                <p className="text-center text-gray-500">
                   Payment form would be here in a real application
                 </p>
               </div>
