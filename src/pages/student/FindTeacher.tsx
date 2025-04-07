@@ -1,208 +1,169 @@
-
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Star } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Star } from "lucide-react";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 
-interface Teacher {
-  id: string;
-  name: string;
-  avatar: string;
-  initials: string;
-  skill: string;
-  rating: number;
-  hourlyRate: number;
-  bio: string;
-}
+const subjects = [
+  { id: "math", name: "Mathematics" },
+  { id: "science", name: "Science" },
+  { id: "english", name: "English" },
+  { id: "history", name: "History" },
+  { id: "art", name: "Art" },
+];
 
-const mockTeachers: Teacher[] = [
+const teachers = [
   {
     id: "1",
-    name: "Maria Johnson",
+    name: "John Smith",
+    subject: "math",
+    rating: 4.5,
+    price: 30,
     avatar: "/placeholder.svg",
-    initials: "MJ",
-    skill: "Yoga",
-    rating: 4.8,
-    hourlyRate: 30,
-    bio: "Certified yoga instructor with 5+ years of experience teaching various styles."
   },
   {
     id: "2",
-    name: "David Lee",
+    name: "Emily Johnson",
+    subject: "science",
+    rating: 4.8,
+    price: 40,
     avatar: "/placeholder.svg",
-    initials: "DL",
-    skill: "Guitar",
-    rating: 4.9,
-    hourlyRate: 40,
-    bio: "Professional guitarist with 10+ years of experience teaching all skill levels."
   },
   {
     id: "3",
-    name: "Sarah Williams",
+    name: "David Brown",
+    subject: "english",
+    rating: 4.2,
+    price: 35,
     avatar: "/placeholder.svg",
-    initials: "SW",
-    skill: "Painting",
-    rating: 4.7,
-    hourlyRate: 35,
-    bio: "Fine arts graduate with a passion for teaching watercolor and oil painting."
   },
-  {
-    id: "4",
-    name: "Michael Chen",
-    avatar: "/placeholder.svg",
-    initials: "MC",
-    skill: "Programming",
-    rating: 4.9,
-    hourlyRate: 50,
-    bio: "Software engineer with expertise in web development and programming fundamentals."
-  }
 ];
 
 const FindTeacher = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedSkill, setSelectedSkill] = useState<string>("all");
-  const [priceRange, setPriceRange] = useState([0, 100]);
-  const [ratingFilter, setRatingFilter] = useState<number | null>(null);
-  
-  // Filtered teachers based on search term and filters
-  const filteredTeachers = mockTeachers.filter(teacher => {
-    const matchesSearch = teacher.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          teacher.skill.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesSkill = selectedSkill === "all" || teacher.skill === selectedSkill;
-    const matchesPrice = teacher.hourlyRate >= priceRange[0] && teacher.hourlyRate <= priceRange[1];
-    const matchesRating = ratingFilter === null || teacher.rating >= ratingFilter;
-    
-    return matchesSearch && matchesSkill && matchesPrice && matchesRating;
+  const [selectedSubject, setSelectedSubject] = useState("");
+  const [sortOption, setSortOption] = useState("relevance");
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const handleSortChange = (value: string) => {
+    setSortOption(value);
+  };
+
+  const getSortLabel = (value: string) => {
+    switch (value) {
+      case "relevance":
+        return "Most Relevant";
+      case "rating":
+        return "Highest Rated";
+      case "price_low":
+        return "Price: Low to High";
+      case "price_high":
+        return "Price: High to Low";
+      default:
+        return "Most Relevant";
+    }
+  };
+
+  const filteredTeachers = teachers.filter((teacher) => {
+    const searchMatch = teacher.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const subjectMatch = selectedSubject ? teacher.subject === selectedSubject : true;
+    return searchMatch && subjectMatch;
+  });
+
+  const sortedTeachers = [...filteredTeachers].sort((a, b) => {
+    switch (sortOption) {
+      case "rating":
+        return b.rating - a.rating;
+      case "price_low":
+        return a.price - b.price;
+      case "price_high":
+        return b.price - a.price;
+      default:
+        return 0;
+    }
   });
 
   return (
-    <div className="space-y-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <h2 className="text-3xl font-bold mb-2">Find Teachers</h2>
-        <p className="text-gray-500">Discover skilled mentors who can help you learn.</p>
-      </motion.div>
-      
-      {/* Search and filters */}
-      <div className="space-y-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
-          <Input
-            placeholder="Search by name or skill..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="text-sm font-medium mb-1 block">Skill</label>
-            <Select 
-              value={selectedSkill} 
-              onChange={(e) => setSelectedSkill(e.target.value)}
-              options={[
-                { value: "all", label: "All Skills" },
-                { value: "Yoga", label: "Yoga" },
-                { value: "Guitar", label: "Guitar" },
-                { value: "Painting", label: "Painting" },
-                { value: "Programming", label: "Programming" }
-              ]}
-            />
-          </div>
-          
-          <div>
-            <label className="text-sm font-medium mb-1 block">Price Range ($/hr)</label>
-            <div className="px-2 pt-6">
-              <Slider
-                defaultValue={[0, 100]}
-                max={100}
-                step={5}
-                value={priceRange}
-                onValueChange={setPriceRange}
-              />
-              <div className="flex justify-between mt-2 text-xs text-gray-500">
-                <span>${priceRange[0]}</span>
-                <span>${priceRange[1]}</span>
-              </div>
-            </div>
-          </div>
-          
-          <div>
-            <label className="text-sm font-medium mb-1 block">Rating</label>
-            <Select 
-              value={ratingFilter?.toString() || "any"} 
-              onChange={(e) => setRatingFilter(e.target.value === "any" ? null : Number(e.target.value))}
-              options={[
-                { value: "any", label: "Any Rating" },
-                { value: "4.5", label: "4.5+" },
-                { value: "4", label: "4+" },
-                { value: "3.5", label: "3.5+" },
-                { value: "3", label: "3+" }
-              ]}
-            />
-          </div>
-        </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="container space-y-6"
+    >
+      <div className="space-y-2 text-center">
+        <h2 className="text-3xl font-bold">Find Your Perfect Teacher</h2>
+        <p className="text-gray-500">
+          Explore a wide range of skilled teachers and find the best fit for your learning needs.
+        </p>
       </div>
-      
-      {/* Teacher cards */}
-      {filteredTeachers.length === 0 ? (
-        <div className="text-center py-10">
-          <h3 className="text-lg font-medium">No teachers found</h3>
-          <p className="text-gray-500">Try adjusting your search criteria.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTeachers.map((teacher) => (
-            <motion.div
-              key={teacher.id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader className="flex flex-row items-center gap-4">
-                  <Avatar className="h-14 w-14">
-                    <AvatarImage src={teacher.avatar} />
-                    <AvatarFallback>{teacher.initials}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <CardTitle className="text-lg">{teacher.name}</CardTitle>
-                    <div className="flex items-center gap-1">
-                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm">{teacher.rating}</span>
-                    </div>
-                    <CardDescription className="text-xs">{teacher.skill} Teacher</CardDescription>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Input
+          type="text"
+          placeholder="Search for teachers"
+          value={searchTerm}
+          onChange={handleSearch}
+        />
+        <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+          <SelectTrigger>
+            <SelectValue>{selectedSubject || "Select a Subject"}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {subjects.map((subject) => (
+              <SelectItem key={subject.id} value={subject.id}>{subject.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold">Available Teachers</h3>
+        <Select value={sortOption} onValueChange={handleSortChange}>
+          <SelectTrigger>
+            <SelectValue>{getSortLabel(sortOption)}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="relevance">Most Relevant</SelectItem>
+            <SelectItem value="rating">Highest Rated</SelectItem>
+            <SelectItem value="price_low">Price: Low to High</SelectItem>
+            <SelectItem value="price_high">Price: High to Low</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {sortedTeachers.map((teacher) => (
+          <Card key={teacher.id}>
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-4">
+                <Avatar>
+                  <AvatarImage src={teacher.avatar} alt={teacher.name} />
+                  <AvatarFallback>{teacher.name.substring(0, 2)}</AvatarFallback>
+                </Avatar>
+                <div className="space-y-1">
+                  <h4 className="text-sm font-semibold">{teacher.name}</h4>
+                  <p className="text-xs text-gray-500">{subjects.find(s => s.id === teacher.subject)?.name}</p>
+                  <div className="flex items-center space-x-1">
+                    <Star className="h-4 w-4 text-yellow-500" />
+                    <span className="text-xs font-medium">{teacher.rating}</span>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <p className="text-sm line-clamp-2">{teacher.bio}</p>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-lg font-semibold">${teacher.hourlyRate}</span>
-                      <span className="text-sm text-gray-500">/hour</span>
-                    </div>
-                    <Button size="sm" asChild>
-                      <Link to={`/student/teacher/${teacher.id}`}>View Profile</Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      )}
-    </div>
+                </div>
+              </div>
+              <div className="mt-4 flex items-center justify-between">
+                <span className="text-sm font-medium">${teacher.price}/hr</span>
+                <Button size="sm">Book Session</Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </motion.div>
   );
 };
 

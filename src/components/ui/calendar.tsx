@@ -11,6 +11,7 @@ export type CalendarProps = {
   className?: string;
   month?: Date;
   onMonthChange?: (date: Date) => void;
+  showOutsideDays?: boolean;
 };
 
 function Calendar({
@@ -125,7 +126,7 @@ function Calendar({
   };
   
   return (
-    <div className={cn("p-3", className)}>
+    <div className={cn("p-3 pointer-events-auto", className)}>
       <div className="flex items-center justify-between mb-2">
         <button 
           onClick={() => handleMonthChange(-1)}

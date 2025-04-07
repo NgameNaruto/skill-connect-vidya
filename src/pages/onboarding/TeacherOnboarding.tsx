@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { z } from "zod";
@@ -110,8 +109,10 @@ const TeacherOnboarding = ({ step, onNext, onBack, onComplete }: TeacherOnboardi
     });
   };
 
-  const handleDateSelect = (selectedDate: Date | undefined) => {
-    setDate(selectedDate);
+  const handleDateSelect = (selectedDate: Date | Date[] | undefined) => {
+    if (selectedDate instanceof Date) {
+      setDate(selectedDate);
+    }
   };
 
   if (step === "info") {

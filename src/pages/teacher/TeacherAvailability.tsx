@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Calendar } from "@/components/ui/calendar";
@@ -23,7 +22,6 @@ interface AvailabilityDay {
   timeSlots: TimeSlot[];
 }
 
-// Sample time options for dropdown
 const timeOptions = [
   "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM",
   "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM",
@@ -33,7 +31,6 @@ const timeOptions = [
   "07:00 PM", "07:30 PM", "08:00 PM", "08:30 PM",
 ];
 
-// Mock initial availability data
 const initialAvailability: AvailabilityDay[] = [
   {
     date: new Date(),
@@ -62,22 +59,19 @@ const TeacherAvailability = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [newStartTime, setNewStartTime] = useState<string>("");
   const [newEndTime, setNewEndTime] = useState<string>("");
-  
-  // Helper to find if a date has availability
+
   const getAvailabilityForDate = (date: Date) => {
     return availability.find(
       (a) => format(a.date, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
     );
   };
 
-  // Check if a date has availability slots
   const hasAvailability = (date: Date) => {
     return availability.some(
       (a) => format(a.date, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
     );
   };
 
-  // Add a new time slot to the selected date
   const handleAddTimeSlot = () => {
     if (!selectedDate || !newStartTime || !newEndTime) {
       toast({
@@ -87,7 +81,6 @@ const TeacherAvailability = () => {
       return;
     }
 
-    // Validate end time is after start time
     const startHour = parseInt(newStartTime.split(':')[0]);
     const endHour = parseInt(newEndTime.split(':')[0]);
     const startMinute = parseInt(newStartTime.split(':')[1]);
@@ -113,7 +106,6 @@ const TeacherAvailability = () => {
       );
 
       if (existingDayIndex !== -1) {
-        // Add to existing day
         const updatedAvailability = [...prev];
         updatedAvailability[existingDayIndex] = {
           ...updatedAvailability[existingDayIndex],
@@ -121,7 +113,6 @@ const TeacherAvailability = () => {
         };
         return updatedAvailability;
       } else {
-        // Add new day
         return [...prev, {
           date: selectedDate,
           timeSlots: [newSlot],
@@ -137,7 +128,6 @@ const TeacherAvailability = () => {
     });
   };
 
-  // Remove a time slot
   const handleRemoveTimeSlot = (date: Date, slotId: string) => {
     setAvailability((prev) => {
       const updatedAvailability = prev.map((day) => {
@@ -150,7 +140,6 @@ const TeacherAvailability = () => {
         return day;
       });
 
-      // Remove days with no time slots
       return updatedAvailability.filter((day) => day.timeSlots.length > 0);
     });
 
@@ -159,12 +148,10 @@ const TeacherAvailability = () => {
     });
   };
 
-  // Create weekly schedule for current week
   const createWeeklySlots = () => {
     const today = new Date();
     const weeklySlots: AvailabilityDay[] = [];
     
-    // For each of the next 7 days
     for (let i = 0; i < 7; i++) {
       const date = addDays(today, i);
       weeklySlots.push({
@@ -182,6 +169,12 @@ const TeacherAvailability = () => {
       title: "Weekly schedule created",
       description: "Added 2 slots for each day this week",
     });
+  };
+
+  const handleDateSelect = (date: Date | Date[] | undefined) => {
+    if (date instanceof Date) {
+      setSelectedDate(date);
+    }
   };
 
   return (
@@ -208,7 +201,7 @@ const TeacherAvailability = () => {
             <Calendar
               mode="single"
               selected={selectedDate}
-              onSelect={setSelectedDate}
+              onSelect={handleDateSelect}
               className="border rounded-md"
               modifiers={{
                 booked: (date) => hasAvailability(date),
@@ -298,7 +291,7 @@ const TeacherAvailability = () => {
                       <label className="text-sm font-medium mb-1 block">Start Time</label>
                       <Select value={newStartTime} onValueChange={setNewStartTime}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select start time" />
+                          <SelectValue>{newStartTime || "Select start time"}</SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           {timeOptions.map((time) => (
@@ -312,7 +305,7 @@ const TeacherAvailability = () => {
                       <label className="text-sm font-medium mb-1 block">End Time</label>
                       <Select value={newEndTime} onValueChange={setNewEndTime}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select end time" />
+                          <SelectValue>{newEndTime || "Select end time"}</SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           {timeOptions.map((time) => (

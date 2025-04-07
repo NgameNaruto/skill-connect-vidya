@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
@@ -66,8 +65,10 @@ const BookSession = () => {
     navigate("/student/overview");
   };
 
-  const handleDateSelect = (date: Date | undefined) => {
-    setSelectedDate(date);
+  const handleSelectDate = (date: Date | Date[] | undefined) => {
+    if (date instanceof Date) {
+      setSelectedDate(date);
+    }
   };
   
   return (
@@ -99,12 +100,9 @@ const BookSession = () => {
                   <Calendar
                     mode="single"
                     selected={selectedDate}
-                    onSelect={handleDateSelect}
+                    onSelect={handleSelectDate}
                     className="border rounded-md"
-                    disabled={(date) => 
-                      date < new Date() || 
-                      date > new Date(new Date().setMonth(new Date().getMonth() + 2))
-                    }
+                    disabled={(date) => date < new Date()}
                   />
                 </div>
                 

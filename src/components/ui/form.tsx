@@ -114,6 +114,7 @@ const FormField = <
 
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext);
+  const itemContext = React.useContext(FormItemContext);
   const formContext = useFormContext();
 
   if (!fieldContext) {
@@ -121,20 +122,24 @@ const useFormField = () => {
   }
 
   const { name } = fieldContext;
-  const {
-    formState: { errors },
-    getFieldState,
-  } = formContext;
 
   return {
     name,
-    formItemId: `form-item-${name}`,
-    formDescriptionId: `form-item-description-${name}`,
-    formMessageId: `form-item-message-${name}`,
-    ...getFieldState(name, formContext),
-    error: errors[name],
+    formItemId: itemContext?.id,
+    formDescriptionId: itemContext?.descriptionId,
+    formMessageId: itemContext?.messageId,
+    ...formContext.getFieldState(name),
+    error: formContext.formState.errors[name],
   };
 };
+
+type FormItemContextValue = {
+  id: string;
+  descriptionId: string;
+  messageId: string;
+};
+
+const FormItemContext = React.createContext<FormItemContextValue | undefined>(undefined);
 
 export {
   Form,
