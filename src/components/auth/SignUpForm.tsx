@@ -1,31 +1,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-
-const formSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
 
 interface SignUpFormProps {
   onSwitchToSignIn: () => void;
@@ -33,39 +9,107 @@ interface SignUpFormProps {
 
 const SignUpForm = ({ onSwitchToSignIn }: SignUpFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
+  });
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
+  });
   const navigate = useNavigate();
   
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
+  const validateForm = () => {
+    let valid = true;
+    const newErrors = {
       name: "",
       email: "",
       password: "",
-      confirmPassword: "",
-    },
-  });
+      confirmPassword: ""
+    };
+    
+    if (!formData.name) {
+      newErrors.name = "Name is required";
+      valid = false;
+    } else if (formData.name.length < 2) {
+      newErrors.name = "Name must be at least 2 characters";
+      valid = false;
+    }
+    
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+      valid = false;
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+      valid = false;
+    }
+    
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+      valid = false;
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+      valid = false;
+    }
+    
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "Please confirm your password";
+      valid = false;
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords don't match";
+      valid = false;
+    }
+    
+    setErrors(newErrors);
+    return valid;
+  };
+  
+  const showToast = (message: string, type: "success" | "error" = "success") => {
+    const toast = document.createElement("div");
+    toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg ${
+      type === "success" ? "bg-green-500" : "bg-red-500"
+    } text-white animate-fade-in`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.classList.remove("animate-fade-in");
+      toast.classList.add("animate-fade-out");
+      setTimeout(() => {
+        document.body.removeChild(toast);
+      }, 300);
+    }, 3000);
+  };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
+    
     setIsLoading(true);
     
     try {
       // This would be where you'd call your auth service
-      console.log("Sign up data:", values);
+      console.log("Sign up data:", formData);
       
-      toast({
-        title: "Account created!",
-        description: "Welcome to VidyaPaalam",
-      });
+      showToast("Account created successfully!");
       
       // Redirect to onboarding
       navigate("/onboarding");
     } catch (error) {
-      toast({
-        title: "Sign up failed",
-        description: "Please check your information and try again",
-        variant: "destructive",
-      });
+      showToast("Sign up failed. Please check your information and try again.", "error");
     } finally {
       setIsLoading(false);
     }
@@ -77,78 +121,115 @@ const SignUpForm = ({ onSwitchToSignIn }: SignUpFormProps) => {
       animate={{ opacity: 1 }}
       className="space-y-4 py-2"
     >
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium mb-1">Full Name</label>
+          <input
+            id="name"
             name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Full Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="John Doe" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            type="text"
+            placeholder="John Doe"
+            value={formData.name}
+            onChange={handleChange}
+            className={`w-full px-3 py-2 border rounded-md ${
+              errors.name ? "border-red-500" : "border-gray-300"
+            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
           />
-          
-          <FormField
-            control={form.control}
+          {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
+        </div>
+        
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
+          <input
+            id="email"
             name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="your@email.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            type="email"
+            placeholder="your@email.com"
+            value={formData.email}
+            onChange={handleChange}
+            className={`w-full px-3 py-2 border rounded-md ${
+              errors.email ? "border-red-500" : "border-gray-300"
+            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
           />
-          
-          <FormField
-            control={form.control}
+          {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
+        </div>
+        
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium mb-1">Password</label>
+          <input
+            id="password"
             name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="******" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            type="password"
+            placeholder="******"
+            value={formData.password}
+            onChange={handleChange}
+            className={`w-full px-3 py-2 border rounded-md ${
+              errors.password ? "border-red-500" : "border-gray-300"
+            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
           />
-          
-          <FormField
-            control={form.control}
+          {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password}</p>}
+        </div>
+        
+        <div>
+          <label htmlFor="confirmPassword" className="block text-sm font-medium mb-1">Confirm Password</label>
+          <input
+            id="confirmPassword"
             name="confirmPassword"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="******" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            type="password"
+            placeholder="******"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            className={`w-full px-3 py-2 border rounded-md ${
+              errors.confirmPassword ? "border-red-500" : "border-gray-300"
+            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
           />
+          {errors.confirmPassword && <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>}
+        </div>
+        
+        <button 
+          type="submit" 
+          className={`w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors ${
+            isLoading ? "opacity-70 cursor-not-allowed" : ""
+          }`}
+          disabled={isLoading}
+        >
+          {isLoading ? "Creating account..." : "Create Account"}
+        </button>
+        
+        <div className="text-center mt-4">
+          <p className="text-sm text-gray-500">
+            Already have an account?{" "}
+            <button 
+              type="button"
+              className="text-blue-600 hover:underline" 
+              onClick={onSwitchToSignIn}
+            >
+              Sign In
+            </button>
+          </p>
+        </div>
+      </form>
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
           
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Creating account..." : "Create Account"}
-          </Button>
+          @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(10px); }
+          }
           
-          <div className="text-center mt-4">
-            <p className="text-sm text-muted-foreground">
-              Already have an account?{" "}
-              <Button variant="link" className="p-0" onClick={onSwitchToSignIn}>
-                Sign In
-              </Button>
-            </p>
-          </div>
-        </form>
-      </Form>
+          .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+          }
+          
+          .animate-fade-out {
+            animation: fadeOut 0.3s ease-out forwards;
+          }
+        `}
+      </style>
     </motion.div>
   );
 };

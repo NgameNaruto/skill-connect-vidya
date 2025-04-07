@@ -90,7 +90,7 @@ const Favorites = () => {
           </p>
           <Link 
             to="/student/find-teacher"
-            className="inline-flex items-center justify-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
             Find Teachers
           </Link>
@@ -122,7 +122,7 @@ const Favorites = () => {
                   <div>
                     <h3 className="text-lg font-semibold">{teacher.name}</h3>
                     <div className="flex items-center gap-1">
-                      <StarIcon className="h-3 w-3 text-primary fill-current" />
+                      <StarIcon className="h-3 w-3 text-yellow-500 fill-current" />
                       <span className="text-sm">{teacher.rating}</span>
                     </div>
                     <p className="text-xs text-gray-500">{teacher.skill} Teacher</p>
@@ -140,7 +140,7 @@ const Favorites = () => {
                         className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-gray-200 p-0 hover:bg-gray-100"
                         onClick={() => handleRemoveFavorite(teacher.id)}
                       >
-                        <HeartIcon className="h-4 w-4 text-current" />
+                        <HeartIcon className="h-4 w-4 text-red-500" />
                       </button>
                       <Link 
                         to={`/student/chat/${teacher.id}`}
@@ -151,7 +151,7 @@ const Favorites = () => {
                       </Link>
                       <Link 
                         to={`/student/teacher/${teacher.id}`}
-                        className="inline-flex h-8 items-center rounded-md bg-primary px-3 text-white hover:bg-primary/90"
+                        className="inline-flex h-8 items-center rounded-md bg-blue-600 px-3 text-white hover:bg-blue-700"
                       >
                         View
                       </Link>

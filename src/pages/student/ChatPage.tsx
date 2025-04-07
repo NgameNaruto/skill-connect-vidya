@@ -1,17 +1,6 @@
 
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-  Card, 
-  CardContent, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
 import { useParams } from "react-router-dom";
-import { Send } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Message {
@@ -87,23 +76,26 @@ const ChatPage: React.FC = () => {
       transition={{ duration: 0.3 }}
       className="flex flex-col h-[calc(100vh-200px)]"
     >
-      <Card className="flex-1 flex flex-col">
-        <CardHeader className="border-b">
+      <div className="flex-1 flex flex-col border border-gray-200 rounded-lg shadow-sm bg-white">
+        <div className="border-b p-4">
           <div className="flex items-center">
-            <Avatar className="h-10 w-10">
-              <AvatarImage src={teacherAvatar} />
-              <AvatarFallback>JS</AvatarFallback>
-            </Avatar>
-            <CardTitle className="ml-4">
-              {teacherName}
-              <div className="text-sm font-normal text-muted-foreground">
+            <div className="h-10 w-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+              {teacherAvatar ? (
+                <img src={teacherAvatar} alt={teacherName} className="h-full w-full object-cover" />
+              ) : (
+                <span className="text-sm font-medium">JS</span>
+              )}
+            </div>
+            <div className="ml-4">
+              <h2 className="text-lg font-semibold">{teacherName}</h2>
+              <div className="text-sm font-normal text-gray-500">
                 Teacher #{teacherId}
               </div>
-            </CardTitle>
+            </div>
           </div>
-        </CardHeader>
+        </div>
         
-        <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((message) => (
             <motion.div
               key={message.id}
@@ -111,13 +103,16 @@ const ChatPage: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               className={`flex ${message.sender === "student" ? "justify-end" : "justify-start"}`}
             >
-              <div className={`max-w-[80%] ${message.sender === "student" ? "bg-primary text-primary-foreground" : "bg-muted"} rounded-lg p-3`}>
+              <div className={`max-w-[80%] ${message.sender === "student" ? "bg-blue-600 text-white" : "bg-gray-100"} rounded-lg p-3`}>
                 <div className="flex items-start">
                   {message.sender === "teacher" && (
-                    <Avatar className="h-6 w-6 mr-2">
-                      <AvatarImage src={teacherAvatar} />
-                      <AvatarFallback>JS</AvatarFallback>
-                    </Avatar>
+                    <div className="h-6 w-6 mr-2 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+                      {teacherAvatar ? (
+                        <img src={teacherAvatar} alt={teacherName} className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="text-xs font-medium">JS</span>
+                      )}
+                    </div>
                   )}
                   <div>
                     <p>{message.content}</p>
@@ -127,22 +122,28 @@ const ChatPage: React.FC = () => {
               </div>
             </motion.div>
           ))}
-        </CardContent>
+        </div>
         
-        <CardFooter className="border-t p-4">
+        <div className="border-t p-4">
           <form onSubmit={handleSendMessage} className="flex w-full gap-2">
-            <Input
+            <input
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Type your message..."
-              className="flex-1"
+              className="flex-1 h-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <Button type="submit" size="icon">
-              <Send className="h-4 w-4" />
-            </Button>
+            <button 
+              type="submit" 
+              className="h-10 w-10 flex items-center justify-center bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
           </form>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
     </motion.div>
   );
 };
