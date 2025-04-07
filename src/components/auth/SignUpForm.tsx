@@ -35,9 +35,6 @@ const SignUpForm = ({ onSwitchToSignIn }: SignUpFormProps) => {
     if (!formData.name) {
       newErrors.name = "Name is required";
       valid = false;
-    } else if (formData.name.length < 2) {
-      newErrors.name = "Name must be at least 2 characters";
-      valid = false;
     }
     
     if (!formData.email) {
@@ -60,7 +57,7 @@ const SignUpForm = ({ onSwitchToSignIn }: SignUpFormProps) => {
       newErrors.confirmPassword = "Please confirm your password";
       valid = false;
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords don't match";
+      newErrors.confirmPassword = "Passwords do not match";
       valid = false;
     }
     
@@ -109,7 +106,7 @@ const SignUpForm = ({ onSwitchToSignIn }: SignUpFormProps) => {
       // Redirect to onboarding
       navigate("/onboarding");
     } catch (error) {
-      showToast("Sign up failed. Please check your information and try again.", "error");
+      showToast("Sign up failed. Please try again.", "error");
     } finally {
       setIsLoading(false);
     }
@@ -123,12 +120,12 @@ const SignUpForm = ({ onSwitchToSignIn }: SignUpFormProps) => {
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium mb-1">Full Name</label>
+          <label htmlFor="name" className="block text-sm font-medium mb-1">Name</label>
           <input
             id="name"
             name="name"
             type="text"
-            placeholder="John Doe"
+            placeholder="Your Name"
             value={formData.name}
             onChange={handleChange}
             className={`w-full px-3 py-2 border rounded-md ${
@@ -193,7 +190,7 @@ const SignUpForm = ({ onSwitchToSignIn }: SignUpFormProps) => {
           }`}
           disabled={isLoading}
         >
-          {isLoading ? "Creating account..." : "Create Account"}
+          {isLoading ? "Creating Account..." : "Create Account"}
         </button>
         
         <div className="text-center mt-4">
@@ -201,7 +198,7 @@ const SignUpForm = ({ onSwitchToSignIn }: SignUpFormProps) => {
             Already have an account?{" "}
             <button 
               type="button"
-              className="text-blue-600 hover:underline" 
+              className="text-blue-600 hover:underline"
               onClick={onSwitchToSignIn}
             >
               Sign In
@@ -209,27 +206,25 @@ const SignUpForm = ({ onSwitchToSignIn }: SignUpFormProps) => {
           </p>
         </div>
       </form>
-      <style>
-        {`
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          
-          @keyframes fadeOut {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(10px); }
-          }
-          
-          .animate-fade-in {
-            animation: fadeIn 0.3s ease-out forwards;
-          }
-          
-          .animate-fade-out {
-            animation: fadeOut 0.3s ease-out forwards;
-          }
-        `}
-      </style>
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeOut {
+          from { opacity: 1; transform: translateY(0); }
+          to { opacity: 0; transform: translateY(10px); }
+        }
+        
+        .animate-fade-in {
+          animation: fadeIn 0.3s ease-out forwards;
+        }
+        
+        .animate-fade-out {
+          animation: fadeOut 0.3s ease-out forwards;
+        }
+      `}} />
     </motion.div>
   );
 };
