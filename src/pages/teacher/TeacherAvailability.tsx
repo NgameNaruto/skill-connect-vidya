@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Calendar } from "@/components/ui/calendar";
@@ -291,7 +292,9 @@ const TeacherAvailability = () => {
                       <label className="text-sm font-medium mb-1 block">Start Time</label>
                       <Select value={newStartTime} onValueChange={setNewStartTime}>
                         <SelectTrigger>
-                          <SelectValue>{newStartTime || "Select start time"}</SelectValue>
+                          <SelectValue>
+                            {newStartTime || "Select start time"}
+                          </SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           {timeOptions.map((time) => (
@@ -305,7 +308,9 @@ const TeacherAvailability = () => {
                       <label className="text-sm font-medium mb-1 block">End Time</label>
                       <Select value={newEndTime} onValueChange={setNewEndTime}>
                         <SelectTrigger>
-                          <SelectValue>{newEndTime || "Select end time"}</SelectValue>
+                          <SelectValue>
+                            {newEndTime || "Select end time"}
+                          </SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           {timeOptions.map((time) => (

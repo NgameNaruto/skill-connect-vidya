@@ -12,6 +12,12 @@ export type CalendarProps = {
   month?: Date;
   onMonthChange?: (date: Date) => void;
   showOutsideDays?: boolean;
+  modifiers?: {
+    [key: string]: (date: Date) => boolean;
+  };
+  modifiersStyles?: {
+    [key: string]: React.CSSProperties;
+  };
 };
 
 function Calendar({
@@ -23,6 +29,8 @@ function Calendar({
   disabled,
   month,
   onMonthChange,
+  modifiers,
+  modifiersStyles,
   ...props
 }: CalendarProps) {
   const [currentMonth, setCurrentMonth] = React.useState<Date>(month || new Date());
@@ -124,6 +132,23 @@ function Calendar({
   const isToday = (date: Date): boolean => {
     return new Date().toDateString() === date.toDateString();
   };
+
+  const checkModifier = (date: Date, modifier: string): boolean => {
+    return modifiers && modifiers[modifier] ? modifiers[modifier](date) : false;
+  };
+
+  const getModifierStyles = (date: Date): React.CSSProperties => {
+    if (!modifiers || !modifiersStyles) return {};
+    
+    let styles = {};
+    Object.keys(modifiers || {}).forEach(modifier => {
+      if (checkModifier(date, modifier) && modifiersStyles && modifiersStyles[modifier]) {
+        styles = { ...styles, ...modifiersStyles[modifier] };
+      }
+    });
+    
+    return styles;
+  };
   
   return (
     <div className={cn("p-3 pointer-events-auto", className)}>
@@ -163,6 +188,7 @@ function Calendar({
           const isDateSelected = isSelected(date);
           const isDateToday = isToday(date);
           const isDateDisabled = isDisabled(date);
+          const modifierStyles = getModifierStyles(date);
           
           return (
             <button
@@ -179,6 +205,7 @@ function Calendar({
                 isDateDisabled && "text-gray-400 opacity-50 cursor-not-allowed",
                 !isDateSelected && !isDateToday && !isDateDisabled && "hover:bg-gray-100"
               )}
+              style={modifierStyles}
             >
               {date.getDate()}
             </button>
