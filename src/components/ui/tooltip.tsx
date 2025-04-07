@@ -2,16 +2,26 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 
-interface TooltipProps {
+export interface TooltipProps {
   content: React.ReactNode;
   children: React.ReactNode;
   delay?: number;
   side?: 'top' | 'right' | 'bottom' | 'left';
   align?: 'start' | 'center' | 'end';
   className?: string;
+  asChild?: boolean;
+  delayDuration?: number;
 }
 
-const Tooltip = ({ content, children, delay = 300, side = 'top', align = 'center', className }: TooltipProps) => {
+const Tooltip = ({ 
+  content, 
+  children, 
+  delay = 300, 
+  side = 'top', 
+  align = 'center', 
+  className,
+  asChild = false
+}: TooltipProps) => {
   const [isVisible, setIsVisible] = useState(false);
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
@@ -63,15 +73,36 @@ const Tooltip = ({ content, children, delay = 300, side = 'top', align = 'center
 };
 
 // TooltipProvider is just a pass-through component for compatibility
-const TooltipProvider = ({ children }: { children: React.ReactNode }) => {
+const TooltipProvider = ({ 
+  children, 
+  delayDuration 
+}: { 
+  children: React.ReactNode; 
+  delayDuration?: number;
+}) => {
   return <>{children}</>;
 };
 
-const TooltipTrigger = ({ children }: { children: React.ReactNode }) => {
+const TooltipTrigger = ({ 
+  children, 
+  asChild 
+}: { 
+  children: React.ReactNode; 
+  asChild?: boolean; 
+}) => {
   return <>{children}</>;
 };
 
-const TooltipContent = ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
+const TooltipContent = ({ 
+  children, 
+  side,
+  align,
+  ...props 
+}: React.HTMLAttributes<HTMLDivElement> & { 
+  side?: 'top' | 'right' | 'bottom' | 'left'; 
+  align?: 'start' | 'center' | 'end';
+  hidden?: boolean;
+}) => {
   return <div {...props}>{children}</div>;
 };
 

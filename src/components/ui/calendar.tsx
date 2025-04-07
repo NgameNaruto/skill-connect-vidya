@@ -1,133 +1,138 @@
 
 import * as React from 'react';
+import { DayPicker } from 'react-day-picker';
 import { cn } from '@/lib/utils';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-type CalendarDate = Date | undefined;
+export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
+  mode?: 'single' | 'multiple' | 'range';
+  selected?: Date | Date[] | { from: Date; to: Date };
+  onSelect?: (date: Date | Date[] | undefined) => void;
+};
 
-interface CalendarProps {
-  mode?: 'single' | 'range' | 'multiple';
-  selected?: CalendarDate | CalendarDate[];
-  onSelect?: (date: CalendarDate | CalendarDate[]) => void;
-  disabled?: { from: Date; to: Date } | ((date: Date) => boolean);
-  className?: string;
-}
-
-const Calendar = React.forwardRef<HTMLDivElement, CalendarProps>(
-  ({ className, mode = 'single', selected, onSelect, disabled, ...props }, ref) => {
-    const today = new Date();
-    const [viewMonth, setViewMonth] = React.useState(today.getMonth());
-    const [viewYear, setViewYear] = React.useState(today.getFullYear());
-
-    const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
-    const firstDayOfMonth = new Date(viewYear, viewMonth, 1).getDay();
-
-    const prevMonth = () => {
-      if (viewMonth === 0) {
-        setViewMonth(11);
-        setViewYear(viewYear - 1);
-      } else {
-        setViewMonth(viewMonth - 1);
-      }
-    };
-
-    const nextMonth = () => {
-      if (viewMonth === 11) {
-        setViewMonth(0);
-        setViewYear(viewYear + 1);
-      } else {
-        setViewMonth(viewMonth + 1);
-      }
-    };
-
-    const handleDateClick = (day: number) => {
-      const date = new Date(viewYear, viewMonth, day);
-      if (onSelect) {
+function Calendar({
+  className,
+  classNames,
+  showOutsideDays = true,
+  mode = "single",
+  selected,
+  onSelect,
+  ...props
+}: CalendarProps) {
+  const handleSelect = (date: Date | undefined) => {
+    if (onSelect) {
+      if (mode === 'single') {
         onSelect(date);
+      } else if (mode === 'multiple' && selected instanceof Array) {
+        if (date) {
+          // Toggle the date
+          const isSelected = selected.some(
+            (selectedDate) => selectedDate.toDateString() === date.toDateString()
+          );
+          
+          if (isSelected) {
+            onSelect(
+              selected.filter(
+                (selectedDate) => selectedDate.toDateString() !== date.toDateString()
+              )
+            );
+          } else {
+            onSelect([...selected, date]);
+          }
+        }
       }
-    };
-
-    const monthNames = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    
-    const dayNames = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-
-    const renderCalendarDays = () => {
-      const days = [];
-      
-      // Add empty cells for days before the first day of the month
-      for (let i = 0; i < firstDayOfMonth; i++) {
-        days.push(<div key={`empty-${i}`} className="h-9 w-9"></div>);
-      }
-      
-      // Add days of the month
-      for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(viewYear, viewMonth, day);
-        const isSelected = mode === 'single' && selected instanceof Date && 
-          selected.getDate() === day && 
-          selected.getMonth() === viewMonth && 
-          selected.getFullYear() === viewYear;
+    }
+  };
+  
+  return (
+    <div className={cn("p-3", className)}>
+      <div className="flex items-center justify-between mb-2">
+        <button 
+          onClick={() => props.onMonthChange?.(
+            new Date(
+              props.month ? props.month.getFullYear() : new Date().getFullYear(), 
+              props.month ? props.month.getMonth() - 1 : new Date().getMonth() - 1
+            )
+          )}
+          className="p-1 rounded-md hover:bg-accent"
+          type="button"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
         
-        const isToday = today.getDate() === day && 
-          today.getMonth() === viewMonth && 
-          today.getFullYear() === viewYear;
+        <div className="font-medium">
+          {props.month ? `${props.month.toLocaleString('default', { month: 'long' })} ${props.month.getFullYear()}` : ''}
+        </div>
         
-        days.push(
-          <button
-            key={day}
-            type="button"
-            className={cn(
-              'h-9 w-9 rounded-md p-0 font-normal aria-selected:opacity-100',
-              isToday && 'bg-accent text-accent-foreground',
-              isSelected && 'bg-primary text-primary-foreground',
-              !isToday && !isSelected && 'hover:bg-accent hover:text-accent-foreground'
-            )}
-            onClick={() => handleDateClick(day)}
-          >
-            {day}
-          </button>
-        );
-      }
-      
-      return days;
-    };
-
-    return (
-      <div
-        ref={ref}
-        className={cn('p-3 w-64', className)}
-        {...props}
-      >
-        <div className="flex justify-between items-center mb-2">
-          <button
-            type="button"
-            className="p-2 rounded-md hover:bg-accent"
-            onClick={prevMonth}
-          >
-            &lt;
-          </button>
-          <div>{monthNames[viewMonth]} {viewYear}</div>
-          <button
-            type="button"
-            className="p-2 rounded-md hover:bg-accent"
-            onClick={nextMonth}
-          >
-            &gt;
-          </button>
-        </div>
-        <div className="grid grid-cols-7 gap-1 text-center">
-          {dayNames.map((day) => (
-            <div key={day} className="h-9 w-9 text-sm font-medium">
-              {day}
-            </div>
-          ))}
-          {renderCalendarDays()}
-        </div>
+        <button 
+          onClick={() => props.onMonthChange?.(
+            new Date(
+              props.month ? props.month.getFullYear() : new Date().getFullYear(), 
+              props.month ? props.month.getMonth() + 1 : new Date().getMonth() + 1
+            )
+          )}
+          className="p-1 rounded-md hover:bg-accent"
+          type="button"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
       </div>
-    );
-  }
-);
-Calendar.displayName = 'Calendar';
+      
+      <div className="grid grid-cols-7 gap-1 text-center text-xs mb-1">
+        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((day) => (
+          <div key={day} className="font-medium text-muted-foreground">
+            {day}
+          </div>
+        ))}
+      </div>
+      
+      <div className="grid grid-cols-7 gap-1">
+        {Array(35).fill(null).map((_, index) => {
+          const date = new Date(
+            props.month ? props.month.getFullYear() : new Date().getFullYear(),
+            props.month ? props.month.getMonth() : new Date().getMonth(),
+            1 + index - (new Date(
+              props.month ? props.month.getFullYear() : new Date().getFullYear(),
+              props.month ? props.month.getMonth() : new Date().getMonth(),
+              1
+            ).getDay())
+          );
+          
+          const isSelected = 
+            mode === 'single' && selected instanceof Date ? 
+              selected.toDateString() === date.toDateString() : 
+            mode === 'multiple' && selected instanceof Array ? 
+              selected.some(d => d.toDateString() === date.toDateString()) : 
+              false;
+              
+          const isToday = new Date().toDateString() === date.toDateString();
+          const isOutsideMonth = date.getMonth() !== (props.month ? props.month.getMonth() : new Date().getMonth());
+          const isDisabled = props.disabled?.(date) || false;
+          
+          return (
+            <button
+              key={index}
+              type="button"
+              disabled={isDisabled}
+              onClick={() => handleSelect(date)}
+              className={cn(
+                "h-8 w-8 rounded-md text-center text-sm p-0 font-normal aria-selected:opacity-100",
+                isOutsideMonth && !showOutsideDays && "invisible",
+                isOutsideMonth && showOutsideDays && "text-muted-foreground opacity-50",
+                isToday && "bg-accent text-accent-foreground",
+                isSelected && "bg-primary text-primary-foreground",
+                isDisabled && "text-muted-foreground opacity-50 cursor-not-allowed",
+                !isSelected && !isToday && !isDisabled && "hover:bg-accent hover:text-accent-foreground"
+              )}
+            >
+              {date.getDate()}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+Calendar.displayName = "Calendar";
 
 export { Calendar };

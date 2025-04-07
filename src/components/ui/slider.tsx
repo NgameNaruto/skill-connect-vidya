@@ -2,14 +2,15 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 
-interface SliderProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface SliderProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
   max?: number;
   min?: number;
   step?: number;
-  defaultValue?: number[];
-  value?: number[];
+  defaultValue?: number | number[];
+  value?: number | number[];
   onValueChange?: (value: number[]) => void;
   orientation?: 'horizontal' | 'vertical';
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
@@ -21,22 +22,35 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
     defaultValue, 
     value, 
     onValueChange,
+    onChange,
     orientation = 'horizontal',
     ...props 
   }, ref) => {
-    const [internalValue, setInternalValue] = React.useState<number>(
-      Array.isArray(value) ? value[0] : (Array.isArray(defaultValue) ? defaultValue[0] : min)
-    );
+    const initialValue = React.useMemo(() => {
+      if (value !== undefined) {
+        return Array.isArray(value) ? value[0] : value;
+      }
+      if (defaultValue !== undefined) {
+        return Array.isArray(defaultValue) ? defaultValue[0] : defaultValue;
+      }
+      return min;
+    }, []);
+    
+    const [internalValue, setInternalValue] = React.useState<number>(initialValue);
 
     React.useEffect(() => {
-      if (Array.isArray(value)) {
-        setInternalValue(value[0]);
+      if (value !== undefined) {
+        setInternalValue(Array.isArray(value) ? value[0] : value);
       }
     }, [value]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = parseFloat(e.target.value);
       setInternalValue(newValue);
+      
+      if (onChange) {
+        onChange(e);
+      }
       
       if (onValueChange) {
         onValueChange([newValue]);

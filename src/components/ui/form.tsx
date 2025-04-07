@@ -1,5 +1,6 @@
 
 import * as React from 'react';
+import { useFormContext, Controller, FieldValues, ControllerProps, FieldPath } from 'react-hook-form';
 import { cn } from '@/lib/utils';
 
 // Form components to replace shadcn's form components
@@ -69,6 +70,29 @@ const FormMessage = React.forwardRef<
 ));
 FormMessage.displayName = 'FormMessage';
 
+// Add FormField for compatibility
+interface FormFieldContextValue<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+> {
+  name: TName;
+}
+
+const FormFieldContext = React.createContext<FormFieldContextValue>({} as FormFieldContextValue);
+
+const FormField = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+>({
+  ...props
+}: ControllerProps<TFieldValues, TName>) => {
+  return (
+    <FormFieldContext.Provider value={{ name: props.name }}>
+      <Controller {...props} />
+    </FormFieldContext.Provider>
+  );
+};
+
 export {
   Form,
   FormItem,
@@ -76,4 +100,5 @@ export {
   FormControl,
   FormDescription,
   FormMessage,
+  FormField,
 };

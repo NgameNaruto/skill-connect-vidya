@@ -1,6 +1,8 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ToastProvider } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 import AppLayout from "./components/layout/AppLayout";
 import StudentLayout from "./layouts/StudentLayout";
 import TeacherLayout from "./layouts/TeacherLayout";
@@ -36,44 +38,47 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <Routes>
-        {/* Public Routes */}
-        <Route element={<AppLayout />}>
-          <Route path="/" element={<Index />} />
-          <Route path="/skills" element={<SkillsPage />} />
-          <Route path="/skills/:id" element={<SkillDetailPage />} />
-          <Route path="/teachers" element={<MentorsPage />} />
-          <Route path="/about" element={<AboutPage />} />
-        </Route>
-        
-        {/* Onboarding Route */}
-        <Route path="/onboarding" element={<OnboardingPage />} />
-        
-        {/* Student Routes */}
-        <Route path="/student" element={<StudentLayout />}>
-          <Route path="overview" element={<StudentOverview />} />
-          <Route path="find-teacher" element={<FindTeacher />} />
-          <Route path="teacher/:id" element={<TeacherProfile />} />
-          <Route path="book-session/:teacherId" element={<BookSession />} />
-          <Route path="favorites" element={<Favorites />} />
-          <Route path="settings" element={<StudentSettings />} />
-          <Route path="chat/:teacherId" element={<ChatPage />} />
-        </Route>
-        
-        {/* Teacher Routes */}
-        <Route path="/teacher" element={<TeacherLayout />}>
-          <Route path="overview" element={<TeacherOverview />} />
-          <Route path="ratings" element={<TeacherRatings />} />
-          <Route path="availability" element={<TeacherAvailability />} />
-          <Route path="profile" element={<TeacherProfileEdit />} />
-          <Route path="settings" element={<TeacherSettings />} />
-        </Route>
-        
-        {/* 404 Route */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+    <ToastProvider>
+      <Toaster />
+      <BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<Index />} />
+            <Route path="/skills" element={<SkillsPage />} />
+            <Route path="/skills/:id" element={<SkillDetailPage />} />
+            <Route path="/teachers" element={<MentorsPage />} />
+            <Route path="/about" element={<AboutPage />} />
+          </Route>
+          
+          {/* Onboarding Route */}
+          <Route path="/onboarding" element={<OnboardingPage />} />
+          
+          {/* Student Routes */}
+          <Route path="/student" element={<StudentLayout />}>
+            <Route path="overview" element={<StudentOverview />} />
+            <Route path="find-teacher" element={<FindTeacher />} />
+            <Route path="teacher/:id" element={<TeacherProfile />} />
+            <Route path="book-session/:teacherId" element={<BookSession />} />
+            <Route path="favorites" element={<Favorites />} />
+            <Route path="settings" element={<StudentSettings />} />
+            <Route path="chat/:teacherId" element={<ChatPage />} />
+          </Route>
+          
+          {/* Teacher Routes */}
+          <Route path="/teacher" element={<TeacherLayout />}>
+            <Route path="overview" element={<TeacherOverview />} />
+            <Route path="ratings" element={<TeacherRatings />} />
+            <Route path="availability" element={<TeacherAvailability />} />
+            <Route path="profile" element={<TeacherProfileEdit />} />
+            <Route path="settings" element={<TeacherSettings />} />
+          </Route>
+          
+          {/* 404 Route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </ToastProvider>
   </QueryClientProvider>
 );
 

@@ -9,16 +9,20 @@ type SelectOption = {
 };
 
 interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'onChange'> {
-  options: SelectOption[];
+  options?: SelectOption[];
   onChange?: (value: string) => void;
+  onValueChange?: (value: string) => void;
   placeholder?: string;
 }
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ className, options, onChange, placeholder, value, ...props }, ref) => {
+  ({ className, options = [], onChange, onValueChange, placeholder, value, ...props }, ref) => {
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       if (onChange) {
-        onChange(e.target.value);
+        onChange(e);
+      }
+      if (onValueChange) {
+        onValueChange(e.target.value);
       }
     };
 
@@ -47,6 +51,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             {option.label}
           </option>
         ))}
+        {props.children}
       </select>
     );
   }
@@ -118,4 +123,10 @@ const SelectItem = React.forwardRef<
 ));
 SelectItem.displayName = 'SelectItem';
 
-export { Select, SelectTrigger, SelectContent, SelectItem };
+// Adding SelectValue for compatibility
+const SelectValue = ({ children }: { children: React.ReactNode }) => {
+  return <>{children}</>;
+};
+SelectValue.displayName = 'SelectValue';
+
+export { Select, SelectTrigger, SelectContent, SelectItem, SelectValue };
