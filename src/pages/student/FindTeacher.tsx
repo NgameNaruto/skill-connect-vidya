@@ -6,17 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { BadgeCheck, Filter, Search, Star, MapPin } from "lucide-react";
-import { 
-  Select, 
-  SelectTrigger, 
-  SelectContent, 
-  SelectItem, 
-  SelectValue 
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 
+// Subject options
 const subjects = [
   { id: "math", name: "Mathematics" },
   { id: "science", name: "Science" },
@@ -29,14 +30,16 @@ const subjects = [
   { id: "computer_science", name: "Computer Science" },
 ];
 
+// Updated price range options with clearer labels
 const priceRanges = [
   { id: "any", name: "Any Price" },
   { id: "0-20", name: "Under $20" },
-  { id: "20-40", name: "Under $40" },
-  { id: "40-60", name: "Under $60" },
+  { id: "20-40", name: "$20 - $40" },
+  { id: "40-60", name: "$40 - $60" },
   { id: "60+", name: "$60 & Above" },
 ];
 
+// Teacher data
 const teachers = [
   {
     id: "1",
@@ -121,7 +124,8 @@ const FindTeacher = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [availableOnly, setAvailableOnly] = useState(false);
   const [filteredTeachers, setFilteredTeachers] = useState(teachers);
-  
+
+  // Event handlers
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
@@ -144,7 +148,7 @@ const FindTeacher = () => {
     setPriceRange("any");
     setAvailableOnly(false);
     setSortOption("relevance");
-    
+
     toast({
       title: "Filters reset",
       description: "All search filters have been cleared.",
@@ -166,27 +170,32 @@ const FindTeacher = () => {
     }
   };
 
-  // Apply filters and sorting whenever relevant state changes
+  // Filter and sort teachers based on state changes
   useEffect(() => {
-    // Filter by search term, subject, availability and price
     let results = teachers.filter((teacher) => {
-      const searchMatch = teacher.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const subjectMatch = selectedSubject ? teacher.subject === selectedSubject : true;
+      const searchMatch = teacher.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const subjectMatch = selectedSubject
+        ? teacher.subject === selectedSubject
+        : true;
       const availabilityMatch = availableOnly ? teacher.available : true;
-      
-      // Filter by price range
+
+      // Corrected price range filtering logic
       let priceMatch = true;
       if (priceRange !== "any") {
-        if (priceRange === "0-20") priceMatch = teacher.price <= 20;
-        else if (priceRange === "20-40") priceMatch = teacher.price <= 40;
-        else if (priceRange === "40-60") priceMatch = teacher.price <= 60;
-        else if (priceRange === "60+") priceMatch = teacher.price >= 60;
+        if (priceRange === "0-20") priceMatch = teacher.price < 20;
+        else if (priceRange === "20-40")
+          priceMatch = teacher.price >= 20 && teacher.price <= 40;
+        else if (priceRange === "40-60")
+          priceMatch = teacher.price > 40 && teacher.price <= 60;
+        else if (priceRange === "60+") priceMatch = teacher.price > 60;
       }
-      
+
       return searchMatch && subjectMatch && availabilityMatch && priceMatch;
     });
 
-    // Apply sorting
+    // Sorting logic
     results = [...results].sort((a, b) => {
       switch (sortOption) {
         case "rating":
@@ -195,8 +204,11 @@ const FindTeacher = () => {
           return a.price - b.price;
         case "price_high":
           return b.price - a.price;
+        case "relevance":
+          // For now, maintain original order; could implement scoring later
+          return 0;
         default:
-          return 0; // Default sorting (relevance)
+          return 0;
       }
     });
 
@@ -213,7 +225,8 @@ const FindTeacher = () => {
       <div className="space-y-2 text-center">
         <h2 className="text-3xl font-bold">Find Your Perfect Teacher</h2>
         <p className="text-gray-500">
-          Explore our talented teachers and find the right fit for your learning goals
+          Explore our talented teachers and find the right fit for your learning
+          goals
         </p>
       </div>
 
@@ -221,45 +234,54 @@ const FindTeacher = () => {
       <div className="bg-white rounded-lg shadow-sm border p-4">
         <div className="flex flex-col md:flex-row gap-4 mb-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4"
+              aria-hidden="true"
+            />
             <Input
               type="text"
               placeholder="Search teachers by name..."
               value={searchTerm}
               onChange={handleSearch}
               className="pl-10"
+              aria-label="Search teachers by name"
             />
           </div>
-          
+
           <div className="flex flex-col sm:flex-row gap-2">
             <Select value={selectedSubject} onValueChange={handleSubjectChange}>
               <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue>
-                  {selectedSubject ? subjects.find(s => s.id === selectedSubject)?.name : "Subject"}
+                  {selectedSubject
+                    ? subjects.find((s) => s.id === selectedSubject)?.name
+                    : "Subject"}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">All Subjects</SelectItem>
                 {subjects.map((subject) => (
-                  <SelectItem key={subject.id} value={subject.id}>{subject.name}</SelectItem>
+                  <SelectItem key={subject.id} value={subject.id}>
+                    {subject.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            
-            <Button 
-              variant="outline" 
+
+            <Button
+              variant="outline"
               onClick={() => setShowFilters(!showFilters)}
               className="sm:w-auto"
+              aria-label={showFilters ? "Hide filters" : "Show filters"}
             >
               <Filter className="h-4 w-4 mr-2" />
               Filters
             </Button>
           </div>
         </div>
-        
+
         {/* Expanded Filters */}
         {showFilters && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
@@ -267,33 +289,50 @@ const FindTeacher = () => {
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <label className="text-sm font-medium mb-1 block">Price Range</label>
-                <Select value={priceRange} onValueChange={handlePriceRangeChange}>
+                <label className="text-sm font-medium mb-1 block">
+                  Price Range
+                </label>
+                <Select
+                  value={priceRange}
+                  onValueChange={handlePriceRangeChange}
+                >
                   <SelectTrigger>
                     <SelectValue>
-                      {priceRanges.find(p => p.id === priceRange)?.name || "Any Price"}
+                      {priceRanges.find((p) => p.id === priceRange)?.name ||
+                        "Any Price"}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {priceRanges.map((range) => (
-                      <SelectItem key={range.id} value={range.id}>{range.name}</SelectItem>
+                      <SelectItem key={range.id} value={range.id}>
+                        {range.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div className="flex items-center">
                 <label className="flex items-center space-x-2 cursor-pointer">
-                  <Checkbox 
+                  <Checkbox
                     checked={availableOnly}
-                    onCheckedChange={(checked) => setAvailableOnly(checked === true)}
+                    onCheckedChange={(checked) =>
+                      setAvailableOnly(checked === true)
+                    }
+                    id="available-only"
                   />
-                  <span className="text-sm font-medium">Available teachers only</span>
+                  <span className="text-sm font-medium">
+                    Available teachers only
+                  </span>
                 </label>
               </div>
-              
+
               <div className="sm:col-span-2 flex justify-end">
-                <Button variant="outline" onClick={handleResetFilters}>
+                <Button
+                  variant="outline"
+                  onClick={handleResetFilters}
+                  aria-label="Reset all filters"
+                >
                   Reset Filters
                 </Button>
               </div>
@@ -305,13 +344,12 @@ const FindTeacher = () => {
       {/* Results Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">
-          {filteredTeachers.length} {filteredTeachers.length === 1 ? 'Teacher' : 'Teachers'} Found
+          {filteredTeachers.length}{" "}
+          {filteredTeachers.length === 1 ? "Teacher" : "Teachers"} Found
         </h3>
         <Select value={sortOption} onValueChange={handleSortChange}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue>
-              {getSortLabel(sortOption)}
-            </SelectValue>
+            <SelectValue>{getSortLabel(sortOption)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="relevance">Most Relevant</SelectItem>
@@ -325,7 +363,10 @@ const FindTeacher = () => {
       {/* Teachers Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredTeachers.map((teacher) => (
-          <Card key={teacher.id} className="overflow-hidden hover:shadow-md transition-shadow">
+          <Card
+            key={teacher.id}
+            className="overflow-hidden hover:shadow-md transition-shadow"
+          >
             <CardContent className="p-5">
               <div className="flex items-start space-x-4">
                 <Avatar className="h-16 w-16 border-2 border-white shadow">
@@ -334,63 +375,89 @@ const FindTeacher = () => {
                     {teacher.name.substring(0, 2)}
                   </AvatarFallback>
                 </Avatar>
-                
+
                 <div className="flex-1 space-y-1.5">
                   <div className="flex items-center">
                     <h4 className="font-semibold">{teacher.name}</h4>
                     {teacher.verification === "verified" && (
-                      <BadgeCheck className="h-4 w-4 text-blue-500 ml-1" />
+                      <BadgeCheck
+                        className="h-4 w-4 text-blue-500 ml-1"
+                        aria-label="Verified teacher"
+                      />
                     )}
                   </div>
-                  
+
                   <p className="text-sm text-gray-500">
-                    {subjects.find(s => s.id === teacher.subject)?.name}
+                    {subjects.find((s) => s.id === teacher.subject)?.name}
                   </p>
-                  
+
                   <div className="flex items-center">
                     <div className="flex items-center">
-                      <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                      <span className="text-sm font-medium ml-1">{teacher.rating}</span>
+                      <Star
+                        className="h-4 w-4 text-yellow-500 fill-yellow-500"
+                        aria-hidden="true"
+                      />
+                      <span className="text-sm font-medium ml-1">
+                        {teacher.rating}
+                      </span>
                     </div>
                     <span className="mx-2 text-gray-300">•</span>
-                    <span className="text-sm text-gray-500">{teacher.experience}</span>
+                    <span className="text-sm text-gray-500">
+                      {teacher.experience}
+                    </span>
                   </div>
-                  
+
                   <div className="flex items-center text-sm text-gray-500">
-                    <MapPin className="h-3 w-3 mr-1" />
+                    <MapPin className="h-3 w-3 mr-1" aria-hidden="true" />
                     {teacher.location}
                   </div>
-                  
+
                   <div className="flex items-center mt-2">
                     {teacher.available ? (
-                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-xs">Available</Badge>
+                      <Badge
+                        variant="outline"
+                        className="bg-green-50 text-green-700 border-green-200 text-xs"
+                      >
+                        Available
+                      </Badge>
                     ) : (
-                      <Badge variant="outline" className="bg-gray-50 text-gray-500 border-gray-200 text-xs">Unavailable</Badge>
+                      <Badge
+                        variant="outline"
+                        className="bg-gray-50 text-gray-500 border-gray-200 text-xs"
+                      >
+                        Unavailable
+                      </Badge>
                     )}
                   </div>
                 </div>
               </div>
-              
+
               <div className="mt-4 pt-4 border-t flex items-center justify-between">
                 <span className="text-lg font-bold">${teacher.price}/hr</span>
                 <Button asChild size="sm">
-                  <a href={`/student/teacher/${teacher.id}`}>View Profile</a>
+                  <a
+                    href={`/student/teacher/${teacher.id}`}
+                    aria-label={`View ${teacher.name}'s profile`}
+                  >
+                    View Profile
+                  </a>
                 </Button>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
-      
+
       {/* No Results */}
       {filteredTeachers.length === 0 && (
         <div className="py-12 text-center">
           <h4 className="text-lg font-medium mb-2">No teachers found</h4>
           <p className="text-gray-500">Try adjusting your search criteria</p>
-          <Button 
-            variant="outline" 
-            onClick={handleResetFilters} 
+          <Button
+            variant="outline"
+            onClick={handleResetFilters}
             className="mt-4"
+            aria-label="Reset filters when no results are found"
           >
             Reset Filters
           </Button>
