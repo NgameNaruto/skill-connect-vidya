@@ -1,11 +1,11 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { BadgeCheck, Filter, Search, Star } from "lucide-react";
+import { BadgeCheck, Filter, Search, Star, MapPin } from "lucide-react";
 import { 
   Select, 
   SelectTrigger, 
@@ -14,6 +14,8 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
 
 const subjects = [
   { id: "math", name: "Mathematics" },
@@ -46,6 +48,7 @@ const teachers = [
     verification: "verified",
     experience: "5+ years",
     available: true,
+    location: "New York, NY",
   },
   {
     id: "2",
@@ -57,6 +60,7 @@ const teachers = [
     verification: "verified",
     experience: "7+ years",
     available: true,
+    location: "Los Angeles, CA",
   },
   {
     id: "3",
@@ -68,6 +72,7 @@ const teachers = [
     verification: "verified",
     experience: "3+ years",
     available: true,
+    location: "Chicago, IL",
   },
   {
     id: "4",
@@ -79,6 +84,7 @@ const teachers = [
     verification: "verified",
     experience: "8+ years",
     available: false,
+    location: "Houston, TX",
   },
   {
     id: "5",
@@ -90,6 +96,7 @@ const teachers = [
     verification: "pending",
     experience: "2+ years",
     available: true,
+    location: "Phoenix, AZ",
   },
   {
     id: "6",
@@ -101,23 +108,47 @@ const teachers = [
     verification: "verified",
     experience: "10+ years",
     available: true,
+    location: "Philadelphia, PA",
   },
 ];
 
 const FindTeacher = () => {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [priceRange, setPriceRange] = useState("any");
   const [sortOption, setSortOption] = useState("relevance");
   const [showFilters, setShowFilters] = useState(false);
   const [availableOnly, setAvailableOnly] = useState(false);
+  const [filteredTeachers, setFilteredTeachers] = useState(teachers);
   
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
+  const handleSubjectChange = (value: string) => {
+    setSelectedSubject(value);
+  };
+
+  const handlePriceRangeChange = (value: string) => {
+    setPriceRange(value);
+  };
+
   const handleSortChange = (value: string) => {
     setSortOption(value);
+  };
+
+  const handleResetFilters = () => {
+    setSearchTerm("");
+    setSelectedSubject("");
+    setPriceRange("any");
+    setAvailableOnly(false);
+    setSortOption("relevance");
+    
+    toast({
+      title: "Filters reset",
+      description: "All search filters have been cleared.",
+    });
   };
 
   const getSortLabel = (value: string) => {
@@ -135,44 +166,49 @@ const FindTeacher = () => {
     }
   };
 
-  // Filter by search term, subject, and availability
-  const filteredTeachers = teachers.filter((teacher) => {
-    const searchMatch = teacher.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const subjectMatch = selectedSubject ? teacher.subject === selectedSubject : true;
-    const availabilityMatch = availableOnly ? teacher.available : true;
-    
-    // Filter by price range
-    let priceMatch = true;
-    if (priceRange !== "any") {
-      if (priceRange === "0-20") priceMatch = teacher.price <= 20;
-      else if (priceRange === "20-40") priceMatch = teacher.price <= 40;
-      else if (priceRange === "40-60") priceMatch = teacher.price <= 60;
-      else if (priceRange === "60+") priceMatch = teacher.price >= 60;
-    }
-    
-    return searchMatch && subjectMatch && availabilityMatch && priceMatch;
-  });
+  // Apply filters and sorting whenever relevant state changes
+  useEffect(() => {
+    // Filter by search term, subject, availability and price
+    let results = teachers.filter((teacher) => {
+      const searchMatch = teacher.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const subjectMatch = selectedSubject ? teacher.subject === selectedSubject : true;
+      const availabilityMatch = availableOnly ? teacher.available : true;
+      
+      // Filter by price range
+      let priceMatch = true;
+      if (priceRange !== "any") {
+        if (priceRange === "0-20") priceMatch = teacher.price <= 20;
+        else if (priceRange === "20-40") priceMatch = teacher.price <= 40;
+        else if (priceRange === "40-60") priceMatch = teacher.price <= 60;
+        else if (priceRange === "60+") priceMatch = teacher.price >= 60;
+      }
+      
+      return searchMatch && subjectMatch && availabilityMatch && priceMatch;
+    });
 
-  // Sort filtered teachers
-  const sortedTeachers = [...filteredTeachers].sort((a, b) => {
-    switch (sortOption) {
-      case "rating":
-        return b.rating - a.rating;
-      case "price_low":
-        return a.price - b.price;
-      case "price_high":
-        return b.price - a.price;
-      default:
-        return 0;
-    }
-  });
+    // Apply sorting
+    results = [...results].sort((a, b) => {
+      switch (sortOption) {
+        case "rating":
+          return b.rating - a.rating;
+        case "price_low":
+          return a.price - b.price;
+        case "price_high":
+          return b.price - a.price;
+        default:
+          return 0; // Default sorting (relevance)
+      }
+    });
+
+    setFilteredTeachers(results);
+  }, [searchTerm, selectedSubject, priceRange, availableOnly, sortOption]);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="container space-y-6"
+      className="container py-6 space-y-6"
     >
       <div className="space-y-2 text-center">
         <h2 className="text-3xl font-bold">Find Your Perfect Teacher</h2>
@@ -196,7 +232,7 @@ const FindTeacher = () => {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-2">
-            <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+            <Select value={selectedSubject} onValueChange={handleSubjectChange}>
               <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue>
                   {selectedSubject ? subjects.find(s => s.id === selectedSubject)?.name : "Subject"}
@@ -232,7 +268,7 @@ const FindTeacher = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
                 <label className="text-sm font-medium mb-1 block">Price Range</label>
-                <Select value={priceRange} onValueChange={setPriceRange}>
+                <Select value={priceRange} onValueChange={handlePriceRangeChange}>
                   <SelectTrigger>
                     <SelectValue>
                       {priceRanges.find(p => p.id === priceRange)?.name || "Any Price"}
@@ -247,16 +283,19 @@ const FindTeacher = () => {
               </div>
               
               <div className="flex items-center">
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <Checkbox 
                     checked={availableOnly}
-                    onChange={() => setAvailableOnly(!availableOnly)}
-                    className="sr-only peer"
+                    onCheckedChange={(checked) => setAvailableOnly(checked === true)}
                   />
-                  <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                  <span className="ml-3 text-sm font-medium">Available teachers only</span>
+                  <span className="text-sm font-medium">Available teachers only</span>
                 </label>
+              </div>
+              
+              <div className="sm:col-span-2 flex justify-end">
+                <Button variant="outline" onClick={handleResetFilters}>
+                  Reset Filters
+                </Button>
               </div>
             </div>
           </motion.div>
@@ -266,7 +305,7 @@ const FindTeacher = () => {
       {/* Results Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">
-          {sortedTeachers.length} Teachers Found
+          {filteredTeachers.length} {filteredTeachers.length === 1 ? 'Teacher' : 'Teachers'} Found
         </h3>
         <Select value={sortOption} onValueChange={handleSortChange}>
           <SelectTrigger className="w-[180px]">
@@ -285,7 +324,7 @@ const FindTeacher = () => {
 
       {/* Teachers Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sortedTeachers.map((teacher) => (
+        {filteredTeachers.map((teacher) => (
           <Card key={teacher.id} className="overflow-hidden hover:shadow-md transition-shadow">
             <CardContent className="p-5">
               <div className="flex items-start space-x-4">
@@ -317,11 +356,16 @@ const FindTeacher = () => {
                     <span className="text-sm text-gray-500">{teacher.experience}</span>
                   </div>
                   
+                  <div className="flex items-center text-sm text-gray-500">
+                    <MapPin className="h-3 w-3 mr-1" />
+                    {teacher.location}
+                  </div>
+                  
                   <div className="flex items-center mt-2">
                     {teacher.available ? (
-                      <Badge variant="success" className="text-xs">Available</Badge>
+                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-xs">Available</Badge>
                     ) : (
-                      <Badge variant="secondary" className="text-xs">Unavailable</Badge>
+                      <Badge variant="outline" className="bg-gray-50 text-gray-500 border-gray-200 text-xs">Unavailable</Badge>
                     )}
                   </div>
                 </div>
@@ -339,10 +383,17 @@ const FindTeacher = () => {
       </div>
       
       {/* No Results */}
-      {sortedTeachers.length === 0 && (
+      {filteredTeachers.length === 0 && (
         <div className="py-12 text-center">
           <h4 className="text-lg font-medium mb-2">No teachers found</h4>
           <p className="text-gray-500">Try adjusting your search criteria</p>
+          <Button 
+            variant="outline" 
+            onClick={handleResetFilters} 
+            className="mt-4"
+          >
+            Reset Filters
+          </Button>
         </div>
       )}
     </motion.div>
