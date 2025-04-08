@@ -3,11 +3,9 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 const TeacherSettings = () => {
   const [formData, setFormData] = useState({
@@ -103,14 +101,20 @@ const TeacherSettings = () => {
             <CardContent>
               <form onSubmit={handlePasswordChange} className="space-y-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input
+                  <label 
+                    htmlFor="email"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Email Address
+                  </label>
+                  <input
                     id="email"
                     name="email"
                     type="email"
                     value={formData.email}
                     onChange={handleInputChange}
                     disabled
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   />
                   <p className="text-xs text-muted-foreground">
                     To change your email address, please contact support.
@@ -118,40 +122,67 @@ const TeacherSettings = () => {
                 </div>
                 
                 <div className="grid gap-2">
-                  <Label htmlFor="current-password">Current Password</Label>
-                  <Input
+                  <label 
+                    htmlFor="current-password"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Current Password
+                  </label>
+                  <input
                     id="current-password"
                     name="currentPassword"
                     type="password"
                     value={formData.currentPassword}
                     onChange={handleInputChange}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   />
                 </div>
                 
                 <div className="grid gap-2">
-                  <Label htmlFor="new-password">New Password</Label>
-                  <Input
+                  <label 
+                    htmlFor="new-password"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    New Password
+                  </label>
+                  <input
                     id="new-password"
                     name="newPassword"
                     type="password"
                     value={formData.newPassword}
                     onChange={handleInputChange}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   />
                 </div>
                 
                 <div className="grid gap-2">
-                  <Label htmlFor="confirm-password">Confirm New Password</Label>
-                  <Input
+                  <label 
+                    htmlFor="confirm-password"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Confirm New Password
+                  </label>
+                  <input
                     id="confirm-password"
                     name="confirmPassword"
                     type="password"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   />
                 </div>
                 
                 <div className="flex justify-end">
-                  <Button type="submit">Update Password</Button>
+                  <button 
+                    type="submit" 
+                    className={cn(
+                      "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background",
+                      "bg-primary text-white hover:bg-primary/90",
+                      "h-10 py-2 px-4"
+                    )}
+                  >
+                    Update Password
+                  </button>
                 </div>
               </form>
             </CardContent>
@@ -173,7 +204,15 @@ const TeacherSettings = () => {
                       Add an extra layer of security to your account by requiring a code in addition to your password.
                     </p>
                   </div>
-                  <Button variant="outline">Enable</Button>
+                  <button 
+                    className={cn(
+                      "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background",
+                      "border border-input hover:bg-accent hover:text-accent-foreground",
+                      "h-10 py-2 px-4"
+                    )}
+                  >
+                    Enable
+                  </button>
                 </div>
               </div>
             </CardContent>
@@ -191,7 +230,9 @@ const TeacherSettings = () => {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label>Email Notifications</Label>
+                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Email Notifications
+                  </label>
                   <p className="text-sm text-muted-foreground">
                     Receive updates via email
                   </p>
@@ -204,7 +245,9 @@ const TeacherSettings = () => {
               
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label>Booking Notifications</Label>
+                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Booking Notifications
+                  </label>
                   <p className="text-sm text-muted-foreground">
                     Get notified when someone books a session
                   </p>
@@ -217,7 +260,9 @@ const TeacherSettings = () => {
               
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label>Message Notifications</Label>
+                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Message Notifications
+                  </label>
                   <p className="text-sm text-muted-foreground">
                     Get notified when you receive a message
                   </p>
@@ -230,7 +275,9 @@ const TeacherSettings = () => {
               
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label>Session Reminders</Label>
+                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Session Reminders
+                  </label>
                   <p className="text-sm text-muted-foreground">
                     Get reminded about upcoming teaching sessions
                   </p>
@@ -243,7 +290,9 @@ const TeacherSettings = () => {
               
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label>Marketing Emails</Label>
+                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Marketing Emails
+                  </label>
                   <p className="text-sm text-muted-foreground">
                     Receive updates on new features and promotions
                   </p>

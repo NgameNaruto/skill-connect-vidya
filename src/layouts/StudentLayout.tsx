@@ -13,10 +13,10 @@ import {
   SidebarMenuButton,
   SidebarTrigger
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
 import { LogOut, User, Home, Search, Heart, Settings } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 const StudentLayout = () => {
   const location = useLocation();
@@ -104,14 +104,17 @@ const StudentLayout = () => {
           </SidebarContent>
           
           <SidebarFooter className="p-4">
-            <Button 
-              variant="outline" 
-              className="w-full justify-start" 
+            <button 
+              className={cn(
+                "inline-flex items-center justify-start whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background",
+                "border border-input hover:bg-accent hover:text-accent-foreground",
+                "h-10 py-2 px-4 w-full"
+              )}
               onClick={handleLogout}
             >
               <LogOut className="mr-2 h-4 w-4" />
               Logout
-            </Button>
+            </button>
           </SidebarFooter>
         </Sidebar>
         

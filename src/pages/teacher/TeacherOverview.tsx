@@ -1,11 +1,11 @@
 
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, MessageCircle, Video, Star, Users, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 interface Session {
   id: string;
@@ -130,9 +130,16 @@ const TeacherOverview = () => {
             <div className="text-center py-10">
               <h3 className="text-lg font-medium mb-2">No upcoming sessions</h3>
               <p className="text-muted-foreground mb-4">Update your availability to get more bookings.</p>
-              <Button asChild>
-                <Link to="/teacher/availability">Set Availability</Link>
-              </Button>
+              <Link 
+                to="/teacher/availability"
+                className={cn(
+                  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background",
+                  "bg-primary text-white hover:bg-primary/90",
+                  "h-10 py-2 px-4"
+                )}
+              >
+                Set Availability
+              </Link>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
@@ -167,12 +174,24 @@ const TeacherOverview = () => {
                           <span>{session.time}</span>
                         </div>
                         <div className="flex space-x-2 pt-2">
-                          <Button size="sm" className="flex-1">
+                          <button 
+                            className={cn(
+                              "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background",
+                              "bg-primary text-white hover:bg-primary/90",
+                              "h-9 px-3 flex-1"
+                            )}
+                          >
                             <Video className="h-4 w-4 mr-1" /> Start
-                          </Button>
-                          <Button size="sm" variant="outline" className="flex-1">
+                          </button>
+                          <button 
+                            className={cn(
+                              "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background",
+                              "border border-input hover:bg-accent hover:text-accent-foreground",
+                              "h-9 px-3 flex-1"
+                            )}
+                          >
                             <MessageCircle className="h-4 w-4 mr-1" /> Chat
-                          </Button>
+                          </button>
                         </div>
                       </div>
                     </CardContent>
@@ -221,9 +240,15 @@ const TeacherOverview = () => {
                           <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
                           <span>{session.time}</span>
                         </div>
-                        <Button size="sm" variant="outline" className="w-full">
+                        <button 
+                          className={cn(
+                            "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background",
+                            "border border-input hover:bg-accent hover:text-accent-foreground",
+                            "h-9 px-3 w-full"
+                          )}
+                        >
                           <MessageCircle className="h-4 w-4 mr-1" /> Message Student
-                        </Button>
+                        </button>
                       </div>
                     </CardContent>
                   </Card>
