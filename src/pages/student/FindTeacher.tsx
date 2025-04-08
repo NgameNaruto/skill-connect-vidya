@@ -198,7 +198,9 @@ const FindTeacher = () => {
           <div className="flex flex-col sm:flex-row gap-2">
             <Select value={selectedSubject} onValueChange={setSelectedSubject}>
               <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Subject" />
+                <SelectValue>
+                  {selectedSubject ? subjects.find(s => s.id === selectedSubject)?.name : "Subject"}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">All Subjects</SelectItem>
@@ -232,7 +234,9 @@ const FindTeacher = () => {
                 <label className="text-sm font-medium mb-1 block">Price Range</label>
                 <Select value={priceRange} onValueChange={setPriceRange}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Price Range" />
+                    <SelectValue>
+                      {priceRanges.find(p => p.id === priceRange)?.name || "Any Price"}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {priceRanges.map((range) => (
@@ -266,7 +270,9 @@ const FindTeacher = () => {
         </h3>
         <Select value={sortOption} onValueChange={handleSortChange}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue>{getSortLabel(sortOption)}</SelectValue>
+            <SelectValue>
+              {getSortLabel(sortOption)}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="relevance">Most Relevant</SelectItem>
