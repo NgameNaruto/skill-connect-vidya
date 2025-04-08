@@ -1,7 +1,7 @@
 
-import React from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export type CalendarProps = {
   mode?: 'single' | 'multiple' | 'range';
@@ -20,7 +20,7 @@ export type CalendarProps = {
   };
 };
 
-export function Calendar({
+function Calendar({
   className,
   showOutsideDays = true,
   mode = "single",
@@ -215,3 +215,6 @@ export function Calendar({
     </div>
   );
 }
+Calendar.displayName = "Calendar";
+
+export { Calendar };
