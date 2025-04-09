@@ -1,7 +1,6 @@
 
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/base-components';
 
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   onValueChange?: (value: string) => void;
@@ -31,7 +30,6 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
 );
 Select.displayName = 'Select';
 
-// These components remain necessary since they provide specific functionality
 const SelectTrigger = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(
   ({ className, children, ...props }, ref) => (
     <button
