@@ -1,5 +1,5 @@
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/layouts/StudentLayout";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface SkillCategoryFilterProps {
