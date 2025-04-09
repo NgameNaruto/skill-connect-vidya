@@ -1,10 +1,10 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { MenuIcon, X } from "lucide-react";
 import AuthModals, { AuthModalType } from "@/components/auth/AuthModals";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/base-components";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

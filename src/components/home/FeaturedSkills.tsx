@@ -1,9 +1,9 @@
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import SkillGrid from "../skills/SkillGrid";
 import { Skill } from "../skills/SkillCard";
 import { mockSkills } from "@/data/mockData";
+import { Button } from "@/components/ui/base-components";
 
 const FeaturedSkills = () => {
   const [visibleSkills, setVisibleSkills] = useState<Skill[]>(mockSkills.slice(0, 4));
