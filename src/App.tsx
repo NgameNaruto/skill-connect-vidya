@@ -22,6 +22,7 @@ import BookSession from "./pages/student/BookSession";
 import Favorites from "./pages/student/Favorites";
 import StudentSettings from "./pages/student/StudentSettings";
 import ChatPage from "./pages/student/ChatPage";
+import VideoCallPage from "./pages/student/VideoCallPage";
 
 // Teacher pages
 import TeacherOverview from "./pages/teacher/TeacherOverview";
@@ -29,6 +30,8 @@ import TeacherRatings from "./pages/teacher/TeacherRatings";
 import TeacherAvailability from "./pages/teacher/TeacherAvailability";
 import TeacherProfileEdit from "./pages/teacher/TeacherProfileEdit";
 import TeacherSettings from "./pages/teacher/TeacherSettings";
+import TeacherChatPage from "./pages/teacher/ChatPage";
+import TeacherVideoCallPage from "./pages/teacher/VideoCallPage";
 
 // 404
 import NotFound from "./pages/NotFound";
@@ -61,6 +64,7 @@ const App = () => (
           <Route path="favorites" element={<Favorites />} />
           <Route path="settings" element={<StudentSettings />} />
           <Route path="chat/:teacherId" element={<ChatPage />} />
+          <Route path="video-call/:teacherId" element={<VideoCallPage />} />
         </Route>
         
         {/* Teacher Routes */}
@@ -70,6 +74,8 @@ const App = () => (
           <Route path="availability" element={<TeacherAvailability />} />
           <Route path="profile" element={<TeacherProfileEdit />} />
           <Route path="settings" element={<TeacherSettings />} />
+          <Route path="chat/:studentId" element={<TeacherChatPage />} />
+          <Route path="video-call/:studentId" element={<TeacherVideoCallPage />} />
         </Route>
         
         {/* 404 Route */}

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -125,8 +124,10 @@ const StudentOverview = () => {
                           <span>{session.time}</span>
                         </div>
                         <div className="flex space-x-2 pt-2">
-                          <Button size="sm" className="flex-1">
-                            <Video className="h-4 w-4 mr-1" /> Join
+                          <Button size="sm" className="flex-1" asChild>
+                            <Link to={`/student/video-call/${session.id}`}>
+                              <Video className="h-4 w-4 mr-1" /> Join
+                            </Link>
                           </Button>
                           <Button size="sm" variant="outline" asChild className="flex-1">
                             <Link to={`/student/chat/${session.id}`}>

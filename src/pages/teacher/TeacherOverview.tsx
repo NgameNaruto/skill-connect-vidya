@@ -167,11 +167,15 @@ const TeacherOverview = () => {
                           <span>{session.time}</span>
                         </div>
                         <div className="flex space-x-2 pt-2">
-                          <Button size="sm" className="flex-1">
-                            <Video className="h-4 w-4 mr-1" /> Start
+                          <Button size="sm" className="flex-1" asChild>
+                            <Link to={`/teacher/video-call/${session.id}`}>
+                              <Video className="h-4 w-4 mr-1" /> Start
+                            </Link>
                           </Button>
-                          <Button size="sm" variant="outline" className="flex-1">
-                            <MessageCircle className="h-4 w-4 mr-1" /> Chat
+                          <Button size="sm" variant="outline" className="flex-1" asChild>
+                            <Link to={`/teacher/chat/${session.id}`}>
+                              <MessageCircle className="h-4 w-4 mr-1" /> Chat
+                            </Link>
                           </Button>
                         </div>
                       </div>
@@ -221,8 +225,10 @@ const TeacherOverview = () => {
                           <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
                           <span>{session.time}</span>
                         </div>
-                        <Button size="sm" variant="outline" className="w-full">
-                          <MessageCircle className="h-4 w-4 mr-1" /> Message Student
+                        <Button size="sm" variant="outline" className="w-full" asChild>
+                          <Link to={`/teacher/chat/${session.id}`}>
+                            <MessageCircle className="h-4 w-4 mr-1" /> Message Student
+                          </Link>
                         </Button>
                       </div>
                     </CardContent>
